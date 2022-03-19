@@ -3,17 +3,24 @@ import { useParams } from "react-router-dom";
 import { joinRoom } from "../api";
 
 const Room = () => {
-
     const params = useParams();
     const roomId = params.id || "";
+    const [errorMsg, setErrorMsg] = React.useState("");
 
     useEffect(() => {
-        return joinRoom(roomId || "", (e) => {
-            console.log(e);
-        });
+        setErrorMsg("");
+        return joinRoom(
+            roomId || "",
+            message => {
+                console.log(message);
+            },
+            closeEvent => {
+                setErrorMsg(closeEvent.reason);
+            }
+        );
     }, [roomId]);
 
-    return <></>;
+    return <>{errorMsg}</>;
 };
 
 export default Room;

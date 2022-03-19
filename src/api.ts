@@ -29,15 +29,18 @@ export const fetchRooms = async (): Promise<{ uuid: string; player_count: number
     return await response.json();
 };
 
-export const joinRoom = (uuid: string, eventHandler: (e: any) => void) => {
+export const joinRoom = (uuid: string, onMessage?: (e: any) => void, onClose?: (e: CloseEvent) => void) => {
     const searchParams = new URLSearchParams();
     searchParams.set("authorization", getToken() || "");
     const ws = new WebSocket(`${wsEntryPoint}/room/${uuid}/ws?${searchParams.toString()}`);
-    ws.addEventListener("message", (e) => eventHandler(JSON.parse(e.data)));
-    ws.addEventListener("close", (e) => console.warn("Websocket connection closed", e));
+    ws.addEventListener("message", e => (onMessage || (() => undefined))(JSON.parse(e.data)));
+    ws.addEventListener("close", e => {
+        (onClose || (() => undefined))(e);
+        console.warn("Websocket connection closed", e);
+    });
 
     return () => ws.close();
-}
+};
 
 export const createRoom = async (name: string): Promise<string> => {
     const response = await fetch(`${restEntryPoint}/rooms`, {
