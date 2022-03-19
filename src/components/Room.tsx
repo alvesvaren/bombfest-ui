@@ -13,14 +13,14 @@ export interface ChatMessage {
 export interface RoomState {
     chat: ChatMessage[];
     players: PlayerData[];
-    prompt?: string;
+    prompt: string | null;
     currentPlayer?: string;
 }
 
 const defaultRoomState: RoomState = {
     chat: [],
     players: [],
-    prompt: undefined,
+    prompt: null,
     currentPlayer: undefined,
 };
 
