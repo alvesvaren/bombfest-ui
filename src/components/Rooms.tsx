@@ -28,7 +28,7 @@ const Rooms = () => {
                 {data &&
                     data.map(room => (
                         <li key={room.uuid}>
-                            <Link to={`/room/${room.uuid}`}>{room.name}</Link>
+                            <Link to={`/room/${room.uuid}`}>{room.name} ({room.player_count})</Link>
                         </li>
                     ))}
             </ul>

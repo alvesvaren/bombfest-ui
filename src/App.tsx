@@ -32,7 +32,13 @@ const Navbar = () => {
 };
 
 const LocalPlayerContext = React.createContext({});
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({defaultOptions: {
+    queries: {
+        refetchInterval: 5000,
+        refetchIntervalInBackground: true,
+
+    }
+}});
 
 const App = () => {
     return (

@@ -34,7 +34,7 @@ export const joinRoom = (uuid: string, eventHandler: (e: any) => void) => {
     searchParams.set("authorization", getToken() || "");
     const ws = new WebSocket(`${wsEntryPoint}/room/${uuid}/ws?${searchParams.toString()}`);
     ws.addEventListener("message", (e) => eventHandler(JSON.parse(e.data)));
-    ws.addEventListener("close", () => console.warn("Websocket connection closed"));
+    ws.addEventListener("close", (e) => console.warn("Websocket connection closed", e));
 
     return () => ws.close();
 }
