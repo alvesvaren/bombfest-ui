@@ -1,3 +1,5 @@
+import { GameEvent, nonce } from "./interfaces";
+
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
 const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
 
@@ -35,11 +37,15 @@ export const joinRoom = (uuid: string, onMessage?: (e: any) => void, onClose?: (
     const ws = new WebSocket(`${wsEntryPoint}/room/${uuid}/ws?${searchParams.toString()}`);
     ws.addEventListener("message", e => (onMessage || (() => undefined))(JSON.parse(e.data)));
     ws.addEventListener("close", e => {
+        console.info("Websocket connection closed", e);
         (onClose || (() => undefined))(e);
-        console.warn("Websocket connection closed", e);
     });
 
-    return () => ws.close();
+    return ws;
+};
+
+export const sendEvent = <T extends GameEvent>(ws: WebSocket, event: T['type'], data: T['data'], nonce?: nonce) => {
+    ws.send(JSON.stringify({ type: event, data, nonce }));
 };
 
 export const createRoom = async (name: string): Promise<string> => {
