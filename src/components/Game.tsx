@@ -3,6 +3,9 @@ import React, { useEffect } from "react";
 import { getTokenData, sendEvent } from "../api";
 import { PlayerData } from "../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
+import sounds from '../sounds';
+
+import useSound from "use-sound";
 
 const Game = () => {
     const socket = useRoomSocket();
@@ -10,12 +13,20 @@ const Game = () => {
     const localUuid = getTokenData()?.sub;
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
+    // const [playNext] = useSound(sounds.next);
+    const [playCorrect] = useSound(sounds.correct);
+    const [playIncorrect] = useSound(sounds.incorrect);
+
+    document.addEventListener("incorrect", () => playIncorrect());
+    document.addEventListener("correct", () => playCorrect());
 
     const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid));
 
     const realPlayingPlayers = playingPlayers.filter(player => player.alive);
     const realPlayingPlayer: PlayerData | undefined = realPlayingPlayers[state.currentPlayerIndex % realPlayingPlayers.length];
     const isLocalTurn = realPlayingPlayer?.uuid === localUuid;
+
+    const waitingForPlayers = !(state.prompt || timeLeft || (realPlayingPlayers.length > 2));
 
     useEffect(() => {
         const startAt = state.startAt;
@@ -32,7 +43,8 @@ const Game = () => {
         <>
             <h1>Game</h1>
 
-            {timeLeft > 0 && <div>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
+            {timeLeft > 0 && <div className="game-status">{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
+            {waitingForPlayers && <div className="game-status">Waiting for players...</div>}
 
             {!playingPlayers.map(player => player.uuid).includes(localUuid || "") && (
                 <button
@@ -44,7 +56,7 @@ const Game = () => {
                 </button>
             )}
 
-            <h2>Write a word containing: {state.prompt}</h2>
+            {state.prompt && <h2>Write a word containing: {state.prompt}</h2>}
 
             <div className='players'>
                 {playingPlayers.map((player, index) => {
@@ -54,11 +66,10 @@ const Game = () => {
                             key={index}
                         >
                             <span className='name'>
-                                {player.name} ({player.lives} hp):
+                                {player.name} ({player.lives} hp):{" "}
                             </span>
                             {state.prompt && (
                                 <span className='text'>
-                                    {" "}
                                     {(() => {
                                         const parts: React.ReactNode[] = player.text.split(state.prompt);
                                         const newParts: typeof parts = [];
@@ -87,7 +98,7 @@ const Game = () => {
             <form
                 onSubmit={e => {
                     e.preventDefault();
-                    if (textInputRef.current?.value) {
+                    if (textInputRef.current) {
                         sendEvent(socket, "submit", { text: textInputRef.current.value });
                         textInputRef.current.value = "";
                     }
@@ -98,7 +109,7 @@ const Game = () => {
                     type='text'
                     disabled={!isLocalTurn}
                     onInput={() => {
-                        if (textInputRef.current?.value) {
+                        if (textInputRef.current) {
                             sendEvent(socket, "text", { text: textInputRef.current.value });
                         }
                     }}

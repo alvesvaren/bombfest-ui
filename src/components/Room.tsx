@@ -43,9 +43,9 @@ export const useRoomSocket = () => {
 };
 
 const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomState => {
+    let event: Event | null = null;
     switch (action.type) {
         case "state":
-
             return { ...state, ...action.data };
         case "chat":
             return { ...state, chat: [...state.chat, action.data] };
@@ -57,6 +57,18 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
             return { ...state, startAt: action.data.at };
         case "text":
             return { ...state, players: state.players.map(p => p.uuid === action.data.from ? { ...p, text: action.data.text } : p) };
+        case "incorrect":
+            event = new Event('incorrect');
+            document.dispatchEvent(event);
+            break;
+        case "correct":
+            event = new Event('correct');
+            document.dispatchEvent(event);
+            break;
+        case "damage":
+            event = new Event('damage');
+            document.dispatchEvent(event);
+            break;
     }
 
     return state;
