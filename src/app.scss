@@ -48,7 +48,7 @@ input {
         border-radius: 5px;
         padding: 0.5rem 0.7rem;
         color: inherit;
-        font-size: inherit
+        font-size: inherit;
     }
 }
 
@@ -64,11 +64,11 @@ button {
 }
 
 .dead {
-    opacity: .5;
+    text-decoration: line-through;
 }
 
 .disconnected {
-    text-decoration: line-through;
+    opacity: 0.5;
 }
 
 .current {
@@ -98,7 +98,6 @@ button {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-
         }
     }
 
@@ -120,5 +119,4 @@ button {
 .game-input {
     position: absolute;
     bottom: 1rem;
-    
 }
