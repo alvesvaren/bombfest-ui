@@ -42,7 +42,7 @@ jobs:
               with:
                 host: srv.svaren.dev
                 port: 2022
-                username: 'github.86eb3749'
+                username: 'github.773a361c'
                 password: ${{ secrets.ftp_password }}
                 localPath: './build/'
                 remotePath: './webroot/'
