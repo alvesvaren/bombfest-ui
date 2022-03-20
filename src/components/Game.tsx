@@ -20,13 +20,12 @@ const Game = () => {
     document.addEventListener("incorrect", () => void playIncorrect());
     document.addEventListener("correct", () => void playCorrect());
 
-    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid));
+    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid)) || [];
 
-    const realPlayingPlayers = playingPlayers.filter(player => player.alive);
-    const realPlayingPlayer: PlayerData | undefined = realPlayingPlayers[state.currentPlayerIndex % realPlayingPlayers.length];
-    const isLocalTurn = realPlayingPlayer?.uuid === localUuid;
+    const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
+    const isLocalTurn = playingPlayer?.uuid === localUuid;
 
-    const waitingForPlayers = !(state.prompt || timeLeft || realPlayingPlayers.length > 2);
+    const waitingForPlayers = playingPlayers.length < 2;
 
     useEffect(() => {
         const startAt = state.startAt;
@@ -58,7 +57,7 @@ const Game = () => {
                 {playingPlayers.map((player, index) => {
                     return (
                         <div
-                            className={classNames({ current: player.uuid === realPlayingPlayer?.uuid, dead: !player.alive, disconnected: !player.connected })}
+                            className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}
                             key={index}
                         >
                             <span className='name'>

@@ -54,7 +54,7 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "leave":
             return { ...state, players: state.players.filter(p => p.uuid !== action.data.uuid) };
         case "start":
-            return { ...state, startAt: action.data.at };
+            return { ...state, startAt: (new Date()).getTime() + action.data.in };
         case "text":
             return { ...state, players: state.players.map(p => (p.uuid === action.data.from ? { ...p, text: action.data.text } : p)) };
         case "incorrect":
@@ -81,16 +81,11 @@ const Room = () => {
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
 
-    (window as any).currentRoomState = currentRoomState;
-
     useEffectOnce(() => {
         setErrorMsg("");
         const ws = joinRoom(
             roomId || "",
-            (message: GameBroadcastEvent) => {
-                console.log(message);
-                handleNewCurrentRoomState(message);
-            },
+            handleNewCurrentRoomState,
             closeEvent => {
                 if (closeEvent.reason || !closeEvent.wasClean) {
                     setErrorMsg(closeEvent.reason || "Connection closed unexpectedly");
