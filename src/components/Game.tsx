@@ -7,6 +7,50 @@ import sounds from "../sounds";
 
 import useSound from "use-sound";
 
+const PlayerText = (props: { player: PlayerData }) => {
+    const { player } = props;
+    const { name, text } = player;
+    const { playingPlayers, playingPlayer } = usePlayingPlayers();
+    return (
+        <div className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}>
+            <span className='name'>
+                {player.name} ({player.lives} hp):{" "}
+            </span>
+            {state.prompt && (
+                <span className='text'>
+                    {(() => {
+                        const parts: React.ReactNode[] = player.text.split(state.prompt);
+                        const newParts: typeof parts = [];
+                        let hasInserted = false;
+                        parts.forEach(part => {
+                            if (part) {
+                                newParts.push(part);
+                            }
+                            if (!hasInserted) {
+                                newParts.push(<span className='matching'>{state.prompt}</span>);
+                                hasInserted = true;
+                            } else {
+                                newParts.push(state.prompt);
+                            }
+                        });
+                        newParts.pop();
+                        return newParts;
+                    })()}
+                </span>
+            )}
+        </div>
+    );
+};
+
+const usePlayingPlayers = () => {
+    const state = useRoomState();
+    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid)) || [];
+
+    const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
+
+    return { playingPlayers, playingPlayer };
+}
+
 const Game = () => {
     const socket = useRoomSocket();
     const state = useRoomState();
@@ -20,9 +64,7 @@ const Game = () => {
     document.addEventListener("incorrect", () => void playIncorrect());
     document.addEventListener("correct", () => void playCorrect());
 
-    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid)) || [];
-
-    const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
+    const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.uuid === localUuid;
 
     const waitingForPlayers = playingPlayers.length < 2;
@@ -40,7 +82,6 @@ const Game = () => {
 
     return (
         <div className='game'>
-
             <div className='board'>
                 {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
