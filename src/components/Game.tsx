@@ -9,8 +9,8 @@ import useSound from "use-sound";
 
 const PlayerText = (props: { player: PlayerData }) => {
     const { player } = props;
-    const { name, text } = player;
-    const { playingPlayers, playingPlayer } = usePlayingPlayers();
+    const state = useRoomState();
+    const { playingPlayer } = usePlayingPlayers();
     return (
         <div className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}>
             <span className='name'>
@@ -97,36 +97,7 @@ const Game = () => {
                 {state.prompt && <h2>{state.prompt}</h2>}
                 {playingPlayers.map((player, index) => {
                     return (
-                        <div
-                            className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}
-                            key={index}
-                        >
-                            <span className='name'>
-                                {player.name} ({player.lives} hp):{" "}
-                            </span>
-                            {state.prompt && (
-                                <span className='text'>
-                                    {(() => {
-                                        const parts: React.ReactNode[] = player.text.split(state.prompt);
-                                        const newParts: typeof parts = [];
-                                        let hasInserted = false;
-                                        parts.forEach(part => {
-                                            if (part) {
-                                                newParts.push(part);
-                                            }
-                                            if (!hasInserted) {
-                                                newParts.push(<span className='matching'>{state.prompt}</span>);
-                                                hasInserted = true;
-                                            } else {
-                                                newParts.push(state.prompt);
-                                            }
-                                        });
-                                        newParts.pop();
-                                        return newParts;
-                                    })()}
-                                </span>
-                            )}
-                        </div>
+                        <PlayerText key={index} player={player} />
                     );
                 })}
             </div>
