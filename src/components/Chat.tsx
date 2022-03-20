@@ -29,7 +29,7 @@ const Chat = () => {
             <form
                 onSubmit={e => {
                     e.preventDefault();
-                    if (roomSocket && chatMessageFieldRef.current?.value) {
+                    if (chatMessageFieldRef.current?.value) {
                         sendEvent(roomSocket, "chat", { text: chatMessageFieldRef.current.value });
                         chatMessageFieldRef.current.value = "";
                     }

@@ -44,8 +44,11 @@ export const joinRoom = (uuid: string, onMessage?: (e: any) => void, onClose?: (
     return ws;
 };
 
-export const sendEvent = <T extends GameEvent>(ws: WebSocket, event: T["type"], data: T["data"], nonce?: nonce) => {
-    ws.send(JSON.stringify({ type: event, data, nonce }));
+export const sendEvent = <T extends GameEvent>(ws: WebSocket | null, event: T["type"], data: T["data"], nonce?: nonce) => {
+    if (ws) {
+        ws.send(JSON.stringify({ type: event, data, nonce }));
+    }
+    return !!ws;
 };
 
 export const createRoom = async (name: string): Promise<string> => {
