@@ -1,6 +1,12 @@
+$nav-height: 3rem;
+
 html,
 body {
     margin: 0;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
@@ -10,11 +16,25 @@ body {
 :root {
     font-family: sans-serif;
     color: white;
+    font-size: 18px;
+}
+
+nav {
+    height: $nav-height;
+    background-color: #0007;
 }
 
 nav > ul {
     list-style: none;
     display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+    height: 100%;
+}
+
+ul {
+    margin: 0;
 }
 
 a {
@@ -28,7 +48,19 @@ input {
         border-radius: 5px;
         padding: 0.5rem 0.7rem;
         color: inherit;
+        font-size: inherit
     }
+}
+
+button {
+    font-size: inherit;
+    appearance: none;
+    background-color: #0004;
+    color: inherit;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0.2rem 1rem;
 }
 
 .dead {
@@ -45,4 +77,48 @@ input {
 
 .matching {
     color: #77ffaa;
+}
+
+.room {
+    display: flex;
+    height: calc(100vh - $nav-height);
+    .game {
+        flex: 3;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .board {
+            font-size: 1.5rem;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+    }
+
+    .chat {
+        background-color: #0004;
+        flex: 1;
+        min-width: 10rem;
+        display: flex;
+        flex-direction: column;
+        .chat-input {
+            margin-top: auto;
+            input {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.game-input {
+    position: absolute;
+    bottom: 1rem;
+    
 }

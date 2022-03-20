@@ -27,6 +27,7 @@ const Chat = () => {
             </ul>
 
             <form
+            className="chat-input"
                 onSubmit={e => {
                     e.preventDefault();
                     if (chatMessageFieldRef.current?.value) {

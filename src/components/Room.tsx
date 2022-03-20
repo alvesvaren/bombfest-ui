@@ -24,7 +24,7 @@ const defaultRoomState: RoomState = {
     language: "sv_SE",
     playingPlayers: [],
     rules: defaultRules,
-    startAt: null
+    startAt: null,
 };
 
 const RoomStateContext = React.createContext<RoomState | null>(null);
@@ -56,17 +56,17 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "start":
             return { ...state, startAt: action.data.at };
         case "text":
-            return { ...state, players: state.players.map(p => p.uuid === action.data.from ? { ...p, text: action.data.text } : p) };
+            return { ...state, players: state.players.map(p => (p.uuid === action.data.from ? { ...p, text: action.data.text } : p)) };
         case "incorrect":
-            event = new Event('incorrect');
+            event = new Event("incorrect");
             document.dispatchEvent(event);
             break;
         case "correct":
-            event = new Event('correct');
+            event = new Event("correct");
             document.dispatchEvent(event);
             break;
         case "damage":
-            event = new Event('damage');
+            event = new Event("damage");
             document.dispatchEvent(event);
             break;
     }
@@ -106,9 +106,11 @@ const Room = () => {
     return (
         <RoomSocketConnectionContext.Provider value={roomSocket}>
             <RoomStateContext.Provider value={currentRoomState}>
-                <p className='error'>{errorMsg}</p>
-                <Game />
-                <Chat />
+                <div className='room'>
+                    <p className='error'>{errorMsg}</p>
+                    <Game />
+                    <Chat />
+                </div>
             </RoomStateContext.Provider>
         </RoomSocketConnectionContext.Provider>
     );

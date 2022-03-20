@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { getTokenData, sendEvent } from "../api";
 import { PlayerData } from "../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
-import sounds from '../sounds';
+import sounds from "../sounds";
 
 import useSound from "use-sound";
 
@@ -17,8 +17,8 @@ const Game = () => {
     const [playCorrect] = useSound(sounds.correct);
     const [playIncorrect] = useSound(sounds.incorrect);
 
-    document.addEventListener("incorrect", () => playIncorrect());
-    document.addEventListener("correct", () => playCorrect());
+    document.addEventListener("incorrect", () => void playIncorrect());
+    document.addEventListener("correct", () => void playCorrect());
 
     const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid));
 
@@ -26,7 +26,7 @@ const Game = () => {
     const realPlayingPlayer: PlayerData | undefined = realPlayingPlayers[state.currentPlayerIndex % realPlayingPlayers.length];
     const isLocalTurn = realPlayingPlayer?.uuid === localUuid;
 
-    const waitingForPlayers = !(state.prompt || timeLeft || (realPlayingPlayers.length > 2));
+    const waitingForPlayers = !(state.prompt || timeLeft || realPlayingPlayers.length > 2);
 
     useEffect(() => {
         const startAt = state.startAt;
@@ -40,25 +40,21 @@ const Game = () => {
     }, [state.startAt]);
 
     return (
-        <>
-            <h1>Game</h1>
+        <div className='game'>
 
-            {timeLeft > 0 && <div className="game-status">{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
-            {waitingForPlayers && <div className="game-status">Waiting for players...</div>}
-
-            {!playingPlayers.map(player => player.uuid).includes(localUuid || "") && (
-                <button
-                    onClick={() => {
-                        sendEvent(socket, "play", {});
-                    }}
-                >
-                    Join
-                </button>
-            )}
-
-            {state.prompt && <h2>Write a word containing: {state.prompt}</h2>}
-
-            <div className='players'>
+            <div className='board'>
+                {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
+                {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
+                {!playingPlayers.map(player => player.uuid).includes(localUuid || "") && (
+                    <button
+                        onClick={() => {
+                            sendEvent(socket, "play", {});
+                        }}
+                    >
+                        Join
+                    </button>
+                )}
+                {state.prompt && <h2>{state.prompt}</h2>}
                 {playingPlayers.map((player, index) => {
                     return (
                         <div
@@ -96,6 +92,7 @@ const Game = () => {
             </div>
 
             <form
+                className='game-input'
                 onSubmit={e => {
                     e.preventDefault();
                     if (textInputRef.current) {
@@ -115,7 +112,7 @@ const Game = () => {
                     }}
                 />
             </form>
-        </>
+        </div>
     );
 };
 
