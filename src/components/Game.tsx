@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect } from "react";
 import { getTokenData, sendEvent } from "../api";
 import { PlayerData } from "../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
@@ -8,16 +8,32 @@ const Game = () => {
     const socket = useRoomSocket();
     const state = useRoomState();
     const localUuid = getTokenData()?.sub;
+    const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
 
     const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid));
 
     const realPlayingPlayers = playingPlayers.filter(player => player.alive);
     const realPlayingPlayer: PlayerData | undefined = realPlayingPlayers[state.currentPlayerIndex % realPlayingPlayers.length];
+    const isLocalTurn = realPlayingPlayer?.uuid === localUuid;
+    
+    useEffect(() => {
+        const startAt = state.startAt;
+        if (startAt) {
+            const id = setInterval(() => {
+                setTimeLeft(startAt - (new Date()).getTime());
+            }, 1000);
+
+            return () => clearInterval(id);
+        }
+
+    }, [state.startAt])
 
     return (
         <>
             <h1>Game</h1>
+
+            {timeLeft > 0 && <div>{Math.ceil(timeLeft/1000)} seconds left until game starts</div>}
 
             {!playingPlayers.map(player => player.uuid).includes(localUuid || "") && (
                 <button
@@ -43,7 +59,25 @@ const Game = () => {
                             <span className='name'>
                                 {player.name} ({player.lives} hp):
                             </span>
-                            <span className='text'> {player.text}</span>
+                            {state.prompt && <span className='text'> {(() => {
+                                const parts: React.ReactNode[] = player.text.split(state.prompt);
+                                const newParts: typeof parts = [];
+                                let hasInserted = false;
+                                parts.forEach(part => {
+                                    if (part) {
+                                        newParts.push(part);
+                                    }
+                                    if (!hasInserted) {
+                                        newParts.push(<span className='matching'>{state.prompt}</span>);
+                                        hasInserted = true;
+                                    } else {
+                                        newParts.push(state.prompt);
+                                    }
+                                })
+                                newParts.pop();
+                                return newParts;
+                            })()}</span>}
+                            
                         </div>
                     );
                 })}
@@ -58,7 +92,7 @@ const Game = () => {
                     }
                 }
             }>
-                <input ref={textInputRef} type="text" onInput={() => {
+                <input ref={textInputRef} type="text" disabled={!isLocalTurn} onInput={() => {
                     if (socket && textInputRef.current?.value) {
                         sendEvent(socket, "text", { text: textInputRef.current.value });
                     }

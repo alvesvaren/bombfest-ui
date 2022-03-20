@@ -68,7 +68,6 @@ const Room = () => {
     const [errorMsg, setErrorMsg] = React.useState("");
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
-    console.log(currentRoomState);
 
     (window as any).currentRoomState = currentRoomState;
 
