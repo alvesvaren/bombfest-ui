@@ -1,4 +1,4 @@
-import { GameEvent, nonce } from "./interfaces";
+import { GameEvent, nonce, uuid } from "./interfaces";
 
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
 const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
@@ -15,7 +15,7 @@ export const jwtToJson = (token: string) => {
     return JSON.parse(atob(token.split(".")[1]));
 };
 
-export const getTokenData = () => {
+export const getTokenData = (): { sub: uuid; name: string; iat: number } | null => {
     const token = getToken();
     if (token) {
         return jwtToJson(token);
@@ -44,7 +44,7 @@ export const joinRoom = (uuid: string, onMessage?: (e: any) => void, onClose?: (
     return ws;
 };
 
-export const sendEvent = <T extends GameEvent>(ws: WebSocket, event: T['type'], data: T['data'], nonce?: nonce) => {
+export const sendEvent = <T extends GameEvent>(ws: WebSocket, event: T["type"], data: T["data"], nonce?: nonce) => {
     ws.send(JSON.stringify({ type: event, data, nonce }));
 };
 

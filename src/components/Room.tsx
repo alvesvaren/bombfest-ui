@@ -2,26 +2,29 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
 import { joinRoom } from "../api";
-import { GameBroadcastEvent, GameEvent, PlayerData } from "../interfaces";
+import { BaseGameState, defaultRules, GameBroadcastEvent } from "../interfaces";
 import Chat from "./Chat";
+import Game from "./Game";
 
 export interface ChatMessage {
     from: string;
     text: string;
 }
 
-export interface RoomState {
+export interface RoomState extends BaseGameState {
     chat: ChatMessage[];
-    players: PlayerData[];
-    prompt: string | null;
-    currentPlayer?: string;
+    startAt: number | null;
 }
 
 const defaultRoomState: RoomState = {
     chat: [],
     players: [],
     prompt: null,
-    currentPlayer: undefined,
+    currentPlayerIndex: 0,
+    language: "sv_SE",
+    playingPlayers: [],
+    rules: defaultRules,
+    startAt: null
 };
 
 const RoomStateContext = React.createContext<RoomState | null>(null);
@@ -39,16 +42,21 @@ export const useRoomSocket = () => {
     return React.useContext(RoomSocketConnectionContext);
 };
 
-const roomStateReducer = (state: RoomState, action: GameEvent | GameBroadcastEvent): RoomState => {
+const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomState => {
     switch (action.type) {
         case "state":
+
             return { ...state, ...action.data };
         case "chat":
-            return { ...state, chat: [...state.chat, { from: "Unknown", ...action.data }] };
+            return { ...state, chat: [...state.chat, action.data] };
         case "join":
             return { ...state, players: [...state.players, action.data] };
         case "leave":
             return { ...state, players: state.players.filter(p => p.uuid !== action.data.uuid) };
+        case "start":
+            return { ...state, startAt: action.data.at };
+        case "text":
+            return { ...state, players: state.players.map(p => p.uuid === action.data.from ? { ...p, text: action.data.text } : p) };
     }
 
     return state;
@@ -68,7 +76,7 @@ const Room = () => {
         setErrorMsg("");
         const ws = joinRoom(
             roomId || "",
-            (message: GameEvent | GameBroadcastEvent) => {
+            (message: GameBroadcastEvent) => {
                 console.log(message);
                 handleNewCurrentRoomState(message);
             },
@@ -88,9 +96,7 @@ const Room = () => {
         <RoomSocketConnectionContext.Provider value={roomSocket}>
             <RoomStateContext.Provider value={currentRoomState}>
                 <p className='error'>{errorMsg}</p>
-                {/* <Game>
-
-            </Game> */}
+                <Game />
                 <Chat />
             </RoomStateContext.Provider>
         </RoomSocketConnectionContext.Provider>
