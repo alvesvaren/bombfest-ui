@@ -1,43 +1,58 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
-import { getTokenData, sendEvent } from "../api";
-import { PlayerData } from "../interfaces";
+import { gameEmitter, getTokenData, sendEvent } from "../api";
+import { IncorrectBroadcastEvent, PlayerData } from "../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
 import sounds from "../sounds";
 
 import useSound from "use-sound";
+import useAnimated from "./Animated";
 
 const PlayerText = (props: { player: PlayerData }) => {
     const { player } = props;
     const state = useRoomState();
     const { playingPlayer } = usePlayingPlayers();
+    const [Shake, startShake] = useAnimated("shake");
+
+    useEffect(() => {
+        const handleIncorrect = (e: IncorrectBroadcastEvent["data"]) => {
+            if (e.for === player.uuid) {
+                startShake();
+            }
+        };
+
+        gameEmitter.addListener("incorrect", handleIncorrect);
+        return () => void gameEmitter.removeListener("incorrect", handleIncorrect);
+    });
     return (
         <div className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}>
             <span className='name'>
                 {player.name} ({player.lives} hp):{" "}
             </span>
-            {state.prompt && (
-                <span className='text'>
-                    {(() => {
-                        const parts: React.ReactNode[] = player.text.split(state.prompt);
-                        const newParts: typeof parts = [];
-                        let hasInserted = false;
-                        parts.forEach(part => {
-                            if (part) {
-                                newParts.push(part);
-                            }
-                            if (!hasInserted) {
-                                newParts.push(<span className='matching'>{state.prompt}</span>);
-                                hasInserted = true;
-                            } else {
-                                newParts.push(state.prompt);
-                            }
-                        });
-                        newParts.pop();
-                        return newParts;
-                    })()}
-                </span>
-            )}
+            <Shake>
+                {state.prompt && (
+                    <span className='text'>
+                        {(() => {
+                            const parts: React.ReactNode[] = player.text.split(state.prompt);
+                            const newParts: typeof parts = [];
+                            let hasInserted = false;
+                            parts.forEach(part => {
+                                if (part) {
+                                    newParts.push(part);
+                                }
+                                if (!hasInserted) {
+                                    newParts.push(<span className='matching'>{state.prompt}</span>);
+                                    hasInserted = true;
+                                } else {
+                                    newParts.push(state.prompt);
+                                }
+                            });
+                            newParts.pop();
+                            return newParts;
+                        })()}
+                    </span>
+                )}
+            </Shake>
         </div>
     );
 };
@@ -49,7 +64,7 @@ const usePlayingPlayers = () => {
     const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
 
     return { playingPlayers, playingPlayer };
-}
+};
 
 const Game = () => {
     const socket = useRoomSocket();
@@ -60,9 +75,10 @@ const Game = () => {
     // const [playNext] = useSound(sounds.next);
     const [playCorrect] = useSound(sounds.correct);
     const [playIncorrect] = useSound(sounds.incorrect);
+    const [Shake, startShake] = useAnimated("shake");
 
-    document.addEventListener("incorrect", () => void playIncorrect());
-    document.addEventListener("correct", () => void playCorrect());
+    gameEmitter.addListener("incorrect", () => playIncorrect());
+    gameEmitter.addListener("correct", () => playCorrect());
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.uuid === localUuid;
@@ -96,9 +112,7 @@ const Game = () => {
                 )}
                 {state.prompt && <h2>{state.prompt}</h2>}
                 {playingPlayers.map((player, index) => {
-                    return (
-                        <PlayerText key={index} player={player} />
-                    );
+                    return <PlayerText key={index} player={player} />;
                 })}
             </div>
 
@@ -123,6 +137,10 @@ const Game = () => {
                     }}
                 />
             </form>
+
+            <Shake>
+                <div onClick={startShake}>Hej</div>
+            </Shake>
         </div>
     );
 };

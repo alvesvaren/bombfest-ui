@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
-import { joinRoom } from "../api";
+import { gameEmitter, joinRoom } from "../api";
 import { BaseGameState, defaultRules, GameBroadcastEvent } from "../interfaces";
 import Chat from "./Chat";
 import Game from "./Game";
@@ -43,7 +43,6 @@ export const useRoomSocket = () => {
 };
 
 const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomState => {
-    let event: Event | null = null;
     switch (action.type) {
         case "state":
             return { ...state, ...action.data };
@@ -58,16 +57,13 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "text":
             return { ...state, players: state.players.map(p => (p.uuid === action.data.from ? { ...p, text: action.data.text } : p)) };
         case "incorrect":
-            event = new Event("incorrect");
-            document.dispatchEvent(event);
+            gameEmitter.emit("incorrect", action.data);
             break;
         case "correct":
-            event = new Event("correct");
-            document.dispatchEvent(event);
+            gameEmitter.emit("correct", action.data);
             break;
         case "damage":
-            event = new Event("damage");
-            document.dispatchEvent(event);
+            gameEmitter.emit("damage", action.data);
             break;
     }
 

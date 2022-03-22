@@ -1,7 +1,11 @@
 import { GameEvent, nonce, uuid } from "./interfaces";
+import EventEmitter from "events";
 
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
 const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
+
+
+export const gameEmitter = new EventEmitter();
 
 export const getToken = () => {
     return localStorage.getItem("token");

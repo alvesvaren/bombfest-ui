@@ -122,3 +122,33 @@ input[type="submit"] {
     position: absolute;
     bottom: 1rem;
 }
+
+.shake {
+    animation: shake 250ms ease-in-out forwards;
+}
+
+@keyframes shake {
+    10% {
+        transform: translateX(-5%);
+    }
+
+    30% {
+        transform: translateX(5%);
+    }
+
+    50% {
+        transform: translateX(-7.5%);
+    }
+
+    70% {
+        transform: translateX(7.5%);
+    }
+
+    90% {
+        transform: translateX(-5%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
