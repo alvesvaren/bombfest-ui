@@ -75,7 +75,6 @@ const Game = () => {
     // const [playNext] = useSound(sounds.next);
     const [playCorrect] = useSound(sounds.correct);
     const [playIncorrect] = useSound(sounds.incorrect);
-    const [Shake, startShake] = useAnimated("shake");
 
     gameEmitter.addListener("incorrect", () => playIncorrect());
     gameEmitter.addListener("correct", () => playCorrect());
@@ -137,10 +136,6 @@ const Game = () => {
                     }}
                 />
             </form>
-
-            <Shake>
-                <div onClick={startShake}>Hej</div>
-            </Shake>
         </div>
     );
 };
