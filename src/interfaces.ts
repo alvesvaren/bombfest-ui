@@ -12,6 +12,12 @@ export const defaultRules: Rules = {
     maxLives: 4,
 };
 
+export interface TokenData {
+    sub: uuid;
+    name: string;
+    iat: number;
+}
+
 export interface PlayerData {
     uuid: string;
     name: string;
