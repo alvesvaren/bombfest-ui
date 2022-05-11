@@ -1,4 +1,4 @@
-import { GameEvent, nonce, uuid } from "./interfaces";
+import { GameEvent, nonce, TokenData } from "./interfaces";
 import EventEmitter from "events";
 
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
@@ -15,11 +15,14 @@ export const saveToken = (uuid: string) => {
     localStorage.setItem("token", uuid);
 };
 
-export const jwtToJson = (token: string) => {
-    return JSON.parse(atob(token.split(".")[1]));
+export const jwtToJson = (token?: string) => {
+    if (token === "undefined") {
+        return {};
+    }
+    return JSON.parse(atob(token?.split(".")[1] || "{}"));
 };
 
-export const getTokenData = (): { sub: uuid; name: string; iat: number } | null => {
+export const getTokenData = (): TokenData | null => {
     const token = getToken();
     if (token) {
         return jwtToJson(token);
@@ -75,6 +78,7 @@ export const updateUsername = async (username: string) => {
         method: "POST",
         body: JSON.stringify({
             name: username,
+            uuid: getTokenData()?.sub,
         }),
         headers: {
             "Content-Type": "application/json",

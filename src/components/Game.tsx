@@ -73,11 +73,18 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
     // const [playNext] = useSound(sounds.next);
-    const [playCorrect] = useSound(sounds.correct);
-    const [playIncorrect] = useSound(sounds.incorrect);
+    const [playCorrect] = useSound(sounds.tick, { volume: 0.008 });
+    const [playIncorrect] = useSound(sounds.fail, { volume: 0.002 });
 
-    gameEmitter.addListener("incorrect", () => playIncorrect());
-    gameEmitter.addListener("correct", () => playCorrect());
+    useEffect(() => {
+        gameEmitter.addListener("incorrect", playIncorrect);
+        gameEmitter.addListener("correct", playCorrect);
+
+        return () => {
+            gameEmitter.removeListener("incorrect", () => playIncorrect);
+            gameEmitter.removeListener("correct", () => playCorrect);
+        };
+    });
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.uuid === localUuid;

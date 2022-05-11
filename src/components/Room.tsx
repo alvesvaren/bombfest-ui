@@ -25,6 +25,7 @@ const defaultRoomState: RoomState = {
     playingPlayers: [],
     rules: defaultRules,
     startAt: null,
+    bombExplodesIn: null
 };
 
 const RoomStateContext = React.createContext<RoomState | null>(null);
