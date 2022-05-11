@@ -117,6 +117,7 @@ export interface BaseGameState {
     currentPlayerIndex: number;
     rules: Rules;
     language: DictionaryName;
+    bombExplodesIn: number | null;
 }
 
 export interface GameStateEvent extends BaseEvent {
