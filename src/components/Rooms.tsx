@@ -27,8 +27,8 @@ const Rooms = () => {
                 {status === "error" && <li>Error!</li>}
                 {data &&
                     data.map(room => (
-                        <li key={room.uuid}>
-                            <Link to={`/room/${room.uuid}`}>{room.name} ({room.player_count})</Link>
+                        <li key={room.cuid}>
+                            <Link to={`/room/${room.cuid}`}>{room.name} ({room.player_count})</Link>
                         </li>
                     ))}
             </ul>

@@ -52,11 +52,11 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "join":
             return { ...state, players: [...state.players, action.data] };
         case "leave":
-            return { ...state, players: state.players.filter(p => p.uuid !== action.data.uuid) };
+            return { ...state, players: state.players.filter(p => p.cuid !== action.data.cuid) };
         case "start":
             return { ...state, startAt: (new Date()).getTime() + action.data.in };
         case "text":
-            return { ...state, players: state.players.map(p => (p.uuid === action.data.from ? { ...p, text: action.data.text } : p)) };
+            return { ...state, players: state.players.map(p => (p.cuid === action.data.from ? { ...p, text: action.data.text } : p)) };
         case "incorrect":
             gameEmitter.emit("incorrect", action.data);
             break;

@@ -4,7 +4,7 @@ import { ChatMessage, useRoomSocket, useRoomState } from "./Room";
 
 const Message = (props: { message: ChatMessage }) => {
     const roomState = useRoomState();
-    const playerName = roomState.players.find(player => player.uuid === props.message.from)?.name;
+    const playerName = roomState.players.find(player => player.cuid === props.message.from)?.name;
     return (
         <>
             <li>
