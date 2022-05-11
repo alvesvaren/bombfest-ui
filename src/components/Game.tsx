@@ -88,6 +88,13 @@ const Game = () => {
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.uuid === localUuid;
+    useEffect(() => {
+        if (isLocalTurn) {
+            setTimeout(() => {
+                textInputRef.current?.focus();
+            }, 0)
+        }
+    }, [isLocalTurn]);
 
     const waitingForPlayers = playingPlayers.length < 2;
 
