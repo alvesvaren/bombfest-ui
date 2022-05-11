@@ -73,8 +73,8 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
     // const [playNext] = useSound(sounds.next);
-    const [playCorrect] = useSound(sounds.correct);
-    const [playIncorrect] = useSound(sounds.incorrect);
+    const [playCorrect] = useSound(sounds.tick, {volume: 0.005});
+    const [playIncorrect] = useSound(sounds.fail, {volume: 0.005});
 
     gameEmitter.addListener("incorrect", () => playIncorrect());
     gameEmitter.addListener("correct", () => playCorrect());
