@@ -1,4 +1,4 @@
-import { GameEvent, nonce, uuid } from "./interfaces";
+import { GameEvent, nonce, TokenData } from "./interfaces";
 import EventEmitter from "events";
 
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
@@ -13,15 +13,18 @@ export const getToken = () => {
     return localStorage.token;
 };
 
-export const saveToken = (uuid: string) => {
-    localStorage.setItem("token", uuid);
+export const saveToken = (cuid: string) => {
+    localStorage.setItem("token", cuid);
 };
 
-export const jwtToJson = (token: string) => {
-    return JSON.parse(atob(token.split(".")[1]));
+export const jwtToJson = (token?: string) => {
+    if (token === "undefined") {
+        return {};
+    }
+    return JSON.parse(atob(token?.split(".")[1] || "{}"));
 };
 
-export const getTokenData = (): { sub: uuid; name: string; iat: number } | null => {
+export const getTokenData = (): TokenData | null => {
     const token = getToken();
     if (token) {
         return jwtToJson(token);
@@ -29,7 +32,7 @@ export const getTokenData = (): { sub: uuid; name: string; iat: number } | null 
     return null;
 };
 
-export const fetchRooms = async (): Promise<{ uuid: string; player_count: number; name: string }[]> => {
+export const fetchRooms = async (): Promise<{ cuid: string; player_count: number; name: string }[]> => {
     const response = await fetch(restEntryPoint + "/rooms");
     if (!response.ok) {
         throw new Error(response.statusText);
@@ -37,10 +40,10 @@ export const fetchRooms = async (): Promise<{ uuid: string; player_count: number
     return await response.json();
 };
 
-export const joinRoom = (uuid: string, onMessage?: (e: any) => void, onClose?: (e: CloseEvent) => void) => {
+export const joinRoom = (cuid: string, onMessage?: (e: any) => void, onClose?: (e: CloseEvent) => void) => {
     const searchParams = new URLSearchParams();
     searchParams.set("authorization", getToken() || "");
-    const ws = new WebSocket(`${wsEntryPoint}/room/${uuid}/ws?${searchParams.toString()}`);
+    const ws = new WebSocket(`${wsEntryPoint}/room/${cuid}/ws?${searchParams.toString()}`);
     ws.addEventListener("message", e => (onMessage || (() => undefined))(JSON.parse(e.data)));
     ws.addEventListener("close", e => {
         console.info("Websocket connection closed", e);
@@ -77,6 +80,7 @@ export const updateUsername = async (username: string) => {
         method: "POST",
         body: JSON.stringify({
             name: username,
+            cuid: getTokenData()?.sub,
         }),
         headers: {
             "Content-Type": "application/json",

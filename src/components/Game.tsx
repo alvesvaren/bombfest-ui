@@ -16,7 +16,7 @@ const PlayerText = (props: { player: PlayerData }) => {
 
     useEffect(() => {
         const handleIncorrect = (e: IncorrectBroadcastEvent["data"]) => {
-            if (e.for === player.uuid) {
+            if (e.for === player.cuid) {
                 startShake();
             }
         };
@@ -25,7 +25,7 @@ const PlayerText = (props: { player: PlayerData }) => {
         return () => void gameEmitter.removeListener("incorrect", handleIncorrect);
     });
     return (
-        <div className={classNames({ current: player.uuid === playingPlayer.uuid, dead: !player.alive, disconnected: !player.connected })}>
+        <div className={classNames({ current: player.cuid === playingPlayer.cuid, dead: !player.alive, disconnected: !player.connected })}>
             <span className='name'>
                 {player.name} ({player.lives} hp):{" "}
             </span>
@@ -59,7 +59,7 @@ const PlayerText = (props: { player: PlayerData }) => {
 
 const usePlayingPlayers = () => {
     const state = useRoomState();
-    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.uuid)) || [];
+    const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.cuid)) || [];
 
     const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
 
@@ -73,14 +73,28 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
     // const [playNext] = useSound(sounds.next);
-    const [playCorrect] = useSound(sounds.correct);
-    const [playIncorrect] = useSound(sounds.incorrect);
+    const [playCorrect] = useSound(sounds.tick, { volume: 0.008 });
+    const [playIncorrect] = useSound(sounds.fail, { volume: 0.002 });
 
-    gameEmitter.addListener("incorrect", () => playIncorrect());
-    gameEmitter.addListener("correct", () => playCorrect());
+    useEffect(() => {
+        gameEmitter.addListener("incorrect", playIncorrect);
+        gameEmitter.addListener("correct", playCorrect);
+
+        return () => {
+            gameEmitter.removeListener("incorrect", () => playIncorrect);
+            gameEmitter.removeListener("correct", () => playCorrect);
+        };
+    });
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
-    const isLocalTurn = playingPlayer?.uuid === localUuid;
+    const isLocalTurn = playingPlayer?.cuid === localUuid;
+    useEffect(() => {
+        if (isLocalTurn) {
+            setTimeout(() => {
+                textInputRef.current?.focus();
+            }, 0)
+        }
+    }, [isLocalTurn]);
 
     const waitingForPlayers = playingPlayers.length < 2;
 
@@ -100,7 +114,7 @@ const Game = () => {
             <div className='board'>
                 {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
-                {!playingPlayers.map(player => player.uuid).includes(localUuid || "") && (
+                {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && (
                     <button
                         onClick={() => {
                             sendEvent(socket, "play", {});
