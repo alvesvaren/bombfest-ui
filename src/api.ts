@@ -4,11 +4,13 @@ import EventEmitter from "events";
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
 const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
 
-
 export const gameEmitter = new EventEmitter();
 
 export const getToken = () => {
-    return localStorage.getItem("token");
+    if (localStorage.token === "undefined") {
+        return null;
+    }
+    return localStorage.token;
 };
 
 export const saveToken = (uuid: string) => {
