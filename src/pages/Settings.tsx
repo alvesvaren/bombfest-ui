@@ -1,6 +1,7 @@
 import React from "react";
 import { getTokenData, updateUsername } from "../api";
 import { useFlash } from "../App";
+import Narrow from "../components/Narrow";
 
 const Settings: React.FC = props => {
     const [formUsername, setFormUsername] = React.useState(getTokenData()?.name || "");
@@ -14,7 +15,7 @@ const Settings: React.FC = props => {
     };
 
     return (
-        <>
+        <Narrow>
             <h1>Settings</h1>
             <form onSubmit={handleSubmit}>
                 <input
@@ -26,7 +27,7 @@ const Settings: React.FC = props => {
                 />
                 <button type='submit'>Save</button>
             </form>
-        </>
+        </Narrow>
     );
 };
 

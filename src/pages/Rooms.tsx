@@ -5,18 +5,20 @@ import { createRoom, fetchRooms, friendlyDictNames } from "../api";
 import { RoomData } from "../interfaces";
 import * as Icons from "../components/icons";
 import { useFlash } from "../App";
+import Narrow from "../components/Narrow";
 
 const RoomCard: React.FC<{ room: RoomData }> = props => {
     const { room } = props;
     return (
-        <article className='card'>
+        <article className='card listed-room'>
             <h1>{room.name}</h1>
             <p>
-                {friendlyDictNames[room.language]} · {room.player_count} {Icons.users}<span className='spacer' />
-                <Link className='square card-link button' to={`/room/${props.room.cuid}`}>
-                    {Icons.play}
-                </Link>
+                {friendlyDictNames[room.language]} · {room.player_count} {Icons.users}
+                <span className='spacer' />
             </p>
+            <Link className='inline play-button card-link button' to={`/room/${props.room.cuid}`}>
+                {Icons.play}
+            </Link>
         </article>
     );
 };
@@ -39,7 +41,7 @@ const Rooms = () => {
     const showFlash = useFlash();
 
     return (
-        <>
+        <Narrow>
             <h1>Rooms</h1>
             <form
                 onSubmit={async e => {
@@ -59,7 +61,7 @@ const Rooms = () => {
                 <input type='submit' value='Create' />
             </form>
             <RoomList />
-        </>
+        </Narrow>
     );
 };
 
