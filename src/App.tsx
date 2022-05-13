@@ -4,19 +4,20 @@ import { Link } from "react-router-dom";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useUnmount } from "react-use";
 import "./app.scss";
+import * as Icons from "./components/icons";
 import Room from "./components/Room";
-import Rooms from "./components/Rooms";
+import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
 
 const Navbar = () => {
     return (
         <nav>
             <ul>
-                <li>
-                    <Link to='/rooms'>Bombfest</Link>
+                <li className="bold">
+                    <Link to='/rooms'>{Icons.bomb} Bombfest</Link>
                 </li>
                 <li>
-                    <Link to='/settings'>Settings</Link>
+                    <Link to='/settings'>{Icons.cog}</Link>
                 </li>
             </ul>
         </nav>

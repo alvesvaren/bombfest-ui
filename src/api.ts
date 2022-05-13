@@ -1,4 +1,4 @@
-import { GameEvent, nonce, TokenData } from "./interfaces";
+import { GameEvent, nonce, RoomData, TokenData } from "./interfaces";
 import EventEmitter from "events";
 
 const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
@@ -13,6 +13,11 @@ export const getToken = () => {
     return localStorage.token;
 };
 
+export const friendlyDictNames = {
+    sv_SE: "Swedish",
+    en_US: "English",
+}
+
 export const saveToken = (cuid: string) => {
     localStorage.setItem("token", cuid);
 };
@@ -26,7 +31,7 @@ export const getTokenData = (): TokenData | null => {
     return token ? jwtToJson(token) : null;
 };
 
-export const fetchRooms = async (): Promise<{ cuid: string; player_count: number; name: string }[]> => {
+export const fetchRooms = async (): Promise<RoomData[]> => {
     const response = await fetch(restEntryPoint + "/rooms");
     if (!response.ok) {
         throw new Error(response.statusText);
@@ -61,6 +66,9 @@ export const createRoom = async (name: string): Promise<string> => {
         },
         body: JSON.stringify({ name }),
     });
+    if (response.status === 400) {
+        throw new Error((await response.json()).error);
+    }
     if (!response.ok) {
         throw new Error(response.statusText);
     }
