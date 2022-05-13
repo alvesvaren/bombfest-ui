@@ -18,18 +18,12 @@ export const saveToken = (cuid: string) => {
 };
 
 export const jwtToJson = (token?: string) => {
-    if (token === "undefined") {
-        return {};
-    }
     return JSON.parse(atob(token?.split(".")[1] || "{}"));
 };
 
 export const getTokenData = (): TokenData | null => {
     const token = getToken();
-    if (token) {
-        return jwtToJson(token);
-    }
-    return null;
+    return token ? jwtToJson(token) : null;
 };
 
 export const fetchRooms = async (): Promise<{ cuid: string; player_count: number; name: string }[]> => {
@@ -44,19 +38,17 @@ export const joinRoom = (cuid: string, onMessage?: (e: any) => void, onClose?: (
     const searchParams = new URLSearchParams();
     searchParams.set("authorization", getToken() || "");
     const ws = new WebSocket(`${wsEntryPoint}/room/${cuid}/ws?${searchParams.toString()}`);
-    ws.addEventListener("message", e => (onMessage || (() => undefined))(JSON.parse(e.data)));
+    ws.addEventListener("message", e => (onMessage || (() => {}))(JSON.parse(e.data)));
     ws.addEventListener("close", e => {
         console.info("Websocket connection closed", e);
-        (onClose || (() => undefined))(e);
+        (onClose || (() => {}))(e);
     });
 
     return ws;
 };
 
 export const sendEvent = <T extends GameEvent>(ws: WebSocket | null, event: T["type"], data: T["data"], nonce?: nonce) => {
-    if (ws) {
-        ws.send(JSON.stringify({ type: event, data, nonce }));
-    }
+    ws?.send(JSON.stringify({ type: event, data, nonce }));
     return !!ws;
 };
 
