@@ -73,8 +73,8 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
     // const [playNext] = useSound(sounds.next);
-    const [playCorrect] = useSound(sounds.tick, { volume: 0.008 });
-    const [playIncorrect] = useSound(sounds.fail, { volume: 0.002 });
+    const [playCorrect] = useSound(sounds.tick, { volume: 0.8 });
+    const [playIncorrect] = useSound(sounds.fail, { volume: 0.2 });
     const showFlash = useFlash();
 
     const handleEnd = (data: EndBroadcastEvent["data"]) => {
