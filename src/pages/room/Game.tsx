@@ -109,12 +109,14 @@ const Game = () => {
         }
     }, [state.startAt]);
 
+    console.log(state.isPlaying);
+
     return (
         <div className={styles.game}>
             <div className={styles.board}>
                 {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
-                {!(playingPlayers.map(player => player.cuid).includes(localUuid || "") || state.isPlaying) && (
+                {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && !state.isPlaying && (
                     <button
                         onClick={() => {
                             sendEvent(socket, "play", {});
