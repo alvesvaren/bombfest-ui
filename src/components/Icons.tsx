@@ -1,5 +1,5 @@
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faGamepad, faBomb, faPlus, faHeart, faPlay, faUsers, faCog, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faGamepad, faBomb, faPlus, faHeart, faPlay, faUsers, faCog, faTimes, faSkullCrossbones } from "@fortawesome/free-solid-svg-icons";
 import styled, { keyframes } from "styled-components";
 
 const bomb = <Icon icon={faBomb} />;
@@ -10,6 +10,7 @@ const users = <Icon icon={faUsers} />;
 const cog = <Icon icon={faCog} />;
 const gamepad = <Icon icon={faGamepad} />;
 const cross = <Icon icon={faTimes} />;
+const skull = <Icon icon={faSkullCrossbones} />;
 // const tickingBomb = <Icon icon={faBomb} className="ticking" />;
 
 const _ticking = keyframes`
@@ -22,4 +23,4 @@ const TickingBomb = styled(Icon).attrs({ icon: faBomb })`
 
 const tickingBomb = <TickingBomb />;
 
-export { bomb, plus, heart, play, users, cog, gamepad, cross, tickingBomb };
+export { bomb, plus, heart, play, users, cog, gamepad, cross, tickingBomb, skull };

@@ -1,13 +1,14 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
 import { gameEmitter, getTokenData, sendEvent } from "../../api";
-import { IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
-import { useRoomSocket, useRoomState } from "./Room";
+import { EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
+import { useRoomEvent, useRoomSocket, useRoomState } from "./Room";
 import sounds from "../../sounds";
 import styles from "./Room.module.scss";
 
 import useSound from "use-sound";
 import useAnimated from "../../components/Animated";
+import { useFlash } from "../../hooks";
 
 const PlayerText = (props: { player: PlayerData }) => {
     const { player } = props;
@@ -26,7 +27,7 @@ const PlayerText = (props: { player: PlayerData }) => {
         return () => void gameEmitter.removeListener("incorrect", handleIncorrect);
     });
     return (
-        <div className={classNames({ current: player.cuid === playingPlayer.cuid, dead: !player.alive, disconnected: !player.connected })}>
+        <div className={classNames({ current: player.cuid === playingPlayer?.cuid, dead: !player.alive, disconnected: !player.connected })}>
             <span className='name'>
                 {player.name} ({player.lives} hp):{" "}
             </span>
@@ -61,9 +62,7 @@ const PlayerText = (props: { player: PlayerData }) => {
 const usePlayingPlayers = () => {
     const state = useRoomState();
     const playingPlayers = state.players.filter(player => state.playingPlayers.includes(player.cuid)) || [];
-
-    const playingPlayer: PlayerData | undefined = playingPlayers[state.currentPlayerIndex % playingPlayers.length];
-
+    const playingPlayer = state.players.find(player => state.currentPlayer === player.cuid);
     return { playingPlayers, playingPlayer };
 };
 
@@ -76,16 +75,16 @@ const Game = () => {
     // const [playNext] = useSound(sounds.next);
     const [playCorrect] = useSound(sounds.tick, { volume: 0.008 });
     const [playIncorrect] = useSound(sounds.fail, { volume: 0.002 });
+    const showFlash = useFlash();
 
-    useEffect(() => {
-        gameEmitter.addListener("incorrect", playIncorrect);
-        gameEmitter.addListener("correct", playCorrect);
+    const handleEnd = (data: EndBroadcastEvent["data"]) => {
+        showFlash(`Game over! ${state.players.find(player => data.winner === player.cuid)?.name} won!`, "success");
+    }
 
-        return () => {
-            gameEmitter.removeListener("incorrect", playIncorrect);
-            gameEmitter.removeListener("correct", playCorrect);
-        };
-    }, [playCorrect, playIncorrect]);
+    useRoomEvent("correct", playCorrect);
+    useRoomEvent("incorrect", playIncorrect);
+
+    useRoomEvent("end", handleEnd);
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.cuid === localUuid;
@@ -93,7 +92,7 @@ const Game = () => {
         if (isLocalTurn) {
             setTimeout(() => {
                 textInputRef.current?.focus();
-            }, 0)
+            }, 0);
         }
     }, [isLocalTurn]);
 
@@ -115,7 +114,7 @@ const Game = () => {
             <div className={styles.board}>
                 {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
-                {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && (
+                {!(playingPlayers.map(player => player.cuid).includes(localUuid || "") || state.isPlaying) && (
                     <button
                         onClick={() => {
                             sendEvent(socket, "play", {});

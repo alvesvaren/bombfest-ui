@@ -16,12 +16,13 @@ const defaultRoomState: RoomState = {
     chat: [],
     players: [],
     prompt: null,
-    currentPlayerIndex: 0,
+    currentPlayer: null,
     language: "sv_SE",
     playingPlayers: [],
     rules: defaultRules,
     startAt: null,
-    bombExplodesIn: null
+    bombExplodesIn: null,
+    isPlaying: false
 };
 
 const RoomStateContext = React.createContext<RoomState | null>(null);
@@ -38,6 +39,13 @@ export const useRoomState = () => {
 export const useRoomSocket = () => {
     return React.useContext(RoomSocketConnectionContext);
 };
+
+export const useRoomEvent = (event: "incorrect" | "correct" | "damage" | "end", handler: (data: any) => void) => {
+    React.useEffect(() => {
+        gameEmitter.addListener(event, handler);
+        return () => void gameEmitter.removeListener(event, handler);
+    }, [event, handler]);
+}
 
 const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomState => {
     switch (action.type) {
@@ -62,8 +70,10 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "damage":
             gameEmitter.emit("damage", action.data);
             break;
+        case "end":
+            gameEmitter.emit("end", action.data);
     }
-
+    console.log(state, action);
     return state;
 };
 
@@ -73,6 +83,8 @@ const Room = () => {
     const [errorMsg, setErrorMsg] = React.useState("");
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
+
+    (window as any).roomState = currentRoomState;
 
     useEffectOnce(() => {
         setErrorMsg("");
