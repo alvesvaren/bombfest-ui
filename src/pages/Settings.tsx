@@ -1,6 +1,6 @@
 import React from "react";
-import { getTokenData, updateUsername } from "../api";
-import { useFlash } from "../App";
+import { deleteToken, getTokenData, updateUsername } from "../api";
+import { useFlash } from "../hooks";
 import Narrow from "../components/Narrow";
 
 const Settings: React.FC = props => {
@@ -27,6 +27,14 @@ const Settings: React.FC = props => {
                 />
                 <button type='submit'>Save</button>
             </form>
+            <button
+                onClick={() => {
+                    deleteToken();
+                    showFlash("Your account has been deleted", "success");
+                }}
+            >
+                Clear data
+            </button>
         </Narrow>
     );
 };

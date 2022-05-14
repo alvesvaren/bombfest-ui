@@ -2,7 +2,7 @@ import React from "react";
 import { useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { createRoom } from "../api";
-import { useFlash } from "../App";
+import { useFlash } from "../hooks";
 import Narrow from "../components/Narrow";
 import { RoomData } from "../interfaces";
 

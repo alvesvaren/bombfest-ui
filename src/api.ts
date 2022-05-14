@@ -5,6 +5,7 @@ const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
 const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
 
 export const gameEmitter = new EventEmitter();
+export const authEmitter = new EventEmitter();
 
 export const getToken = () => {
     if (localStorage.token === "undefined") {
@@ -20,6 +21,12 @@ export const friendlyDictNames = {
 
 export const saveToken = (cuid: string) => {
     localStorage.setItem("token", cuid);
+    authEmitter.emit("auth-changed");
+};
+
+export const deleteToken = () => {
+    localStorage.removeItem("token");
+    authEmitter.emit("auth-changed");
 };
 
 export const jwtToJson = (token?: string) => {
