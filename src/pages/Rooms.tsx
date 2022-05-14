@@ -27,9 +27,10 @@ const RoomList: React.FC = props => {
 
     return (
         <section id='room-list'>
-            {status === "loading" && <li>Loading rooms...</li>}
-            {status === "error" && <li>Could not fetch rooms. Try again later</li>}
+            {status === "loading" && <p>Loading rooms...</p>}
+            {status === "error" && <p>Could not fetch rooms. Try again later</p>}
             {data && data.map(room => <RoomCard room={room} key={room.cuid} />)}
+            {data?.length === 0 && <p>No rooms yet. Create one using the button above!</p>}
         </section>
     );
 };
