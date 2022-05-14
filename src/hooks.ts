@@ -26,7 +26,7 @@ export const useFlash = () => {
 };
 
 export const useTokenData = () => {
-    const [tokenData, setTokenData] = React.useState<TokenData | null>(null);
+    const [tokenData, setTokenData] = React.useState<TokenData | null>(getTokenData());
 
     React.useEffect(() => {
         setTokenData(getTokenData())
