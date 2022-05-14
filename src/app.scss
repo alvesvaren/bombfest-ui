@@ -12,6 +12,15 @@ $slim-shadow: 0.1rem 0.1rem 0px #0004;
     }
 }
 
+@mixin centered {
+    display: flex;
+    &.inline {
+        display: inline-flex;
+    }
+    justify-content: center;
+    align-items: center;
+}
+
 :root {
     --background: #321f28;
     --light-background: #734046;
@@ -29,6 +38,12 @@ body {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+.split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 body {
@@ -64,14 +79,31 @@ article h1 {
     text-shadow: unset;
 }
 
+.flash {
+    @include centered;
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    background-color: #734046;
+    border-radius: 0.3rem;
+    padding: 0rem 1rem;
+    padding-right: 0;
+}
+
+.create-new-room {
+    @include centered;
+    gap: 1rem;
+    font-size: 1.25rem;
+    .button {
+        @extend .squared;
+    }
+}
+
 nav > ul {
     list-style: none;
-    display: flex;
-    align-items: center;
     gap: 1rem;
     padding: 0 1rem;
     height: 100%;
-    justify-content: space-between;
 
     a {
         text-decoration: none;
@@ -116,7 +148,6 @@ a.card-link {
     flex: 1;
 }
 
-
 .card {
     display: inline-block;
     background-color: var(--light-background);
@@ -145,24 +176,33 @@ a.card-link {
     padding: 1rem;
     grid-template-columns: auto 2.5rem;
     grid-template-rows: repeat(2, 1fr);
-    h1 { grid-area: 1 / 1 / 2 / 3; }
+    h1 {
+        grid-area: 1 / 1 / 2 / 3;
+    }
+}
+
+.squared {
+    @include centered;
+    aspect-ratio: 1/1;
+    width: 2.5rem;
 }
 
 .play-button {
+    @extend .squared;
     font-size: 1.25rem !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
     box-shadow: $default-shadow;
-    aspect-ratio: 1/1;
 }
 
 @include for-buttons {
     font-size: inherit;
     appearance: none;
-    background-color: var(--accent);
-    color: var(--background);
+    color: inherit;
+    background-color: transparent;
+    &:not(.flat) {
+        background-color: var(--accent);
+        color: var(--background);
+    }
     font-family: inherit;
     font-weight: inherit;
     border: none;
@@ -171,6 +211,10 @@ a.card-link {
     padding: 0.5rem 0.7rem;
     &:not(.inline) {
         min-width: 6rem;
+    }
+
+    .svg-inline--fa {
+        filter: none;
     }
 }
 

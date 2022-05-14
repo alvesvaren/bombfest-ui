@@ -57,7 +57,7 @@ export const sendEvent = <T extends GameEvent>(ws: WebSocket | null, event: T["t
     return !!ws;
 };
 
-export const createRoom = async (name: string): Promise<string> => {
+export const createRoom = async (name: string): Promise<RoomData> => {
     const response = await fetch(`${restEntryPoint}/rooms`, {
         method: "POST",
         headers: {

@@ -1,10 +1,9 @@
 import React from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { createRoom, fetchRooms, friendlyDictNames } from "../api";
+import { fetchRooms, friendlyDictNames } from "../api";
 import { RoomData } from "../interfaces";
-import * as Icons from "../components/icons";
-import { useFlash } from "../App";
+import * as Icons from "../components/Icons";
 import Narrow from "../components/Narrow";
 
 const RoomCard: React.FC<{ room: RoomData }> = props => {
@@ -36,30 +35,14 @@ const RoomList: React.FC = props => {
 };
 
 const Rooms = () => {
-    const queryClient = useQueryClient();
-    const roomFieldRef = React.useRef<HTMLInputElement>(null);
-    const showFlash = useFlash();
 
     return (
         <Narrow>
-            <h1>Rooms</h1>
-            <form
-                onSubmit={async e => {
-                    e.preventDefault();
-                    if (roomFieldRef.current) {
-                        try {
-                            await createRoom(roomFieldRef.current.value);
-                        } catch (e: any) {
-                            showFlash(`Could not create room: ${e.message}`, "error");
-                        }
-                        roomFieldRef.current.value = "";
-                        queryClient.invalidateQueries("rooms");
-                    }
-                }}
-            >
-                <input type='text' ref={roomFieldRef} placeholder='New room name' />
-                <input type='submit' value='Create' />
-            </form>
+            <div className="split">
+                <h1>Rooms</h1>
+                <div className="create-new-room">Create room <Link to="/rooms/new" className="inline button">{Icons.plus}</Link> </div>
+            </div>
+
             <RoomList />
         </Narrow>
     );

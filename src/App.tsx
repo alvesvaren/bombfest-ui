@@ -4,15 +4,17 @@ import { Link } from "react-router-dom";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useUnmount } from "react-use";
 import "./app.scss";
-import * as Icons from "./components/icons";
+import FlashMessageCard from "./components/FlashMessageCard";
+import * as Icons from "./components/Icons";
 import Room from "./components/Room";
+import NewRoom from "./pages/NewRoom";
 import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
 
 const Navbar = () => {
     return (
         <nav>
-            <ul>
+            <ul className="split">
                 <li className="bold">
                     <Link to='/rooms'>{Icons.bomb} Bombfest</Link>
                 </li>
@@ -69,6 +71,7 @@ const App = () => {
                         <Routes>
                             <Route index element={<Navigate replace to='/rooms' />} />
                             <Route path='/rooms' element={<Rooms />} />
+                            <Route path='/rooms/new' element={<NewRoom />} />
                             <Route path='/room/:id' element={<Room />} />
                             <Route path='/settings' element={<Settings />} />
 
@@ -77,11 +80,7 @@ const App = () => {
                     </main>
                 </BrowserRouter>
             </QueryClientProvider>
-            {message && (
-                <div className={`flash ${message.type}`}>
-                    <p>{message.text}</p>
-                </div>
-            )}
+            <FlashMessageCard clearFlash={() => setMessage(undefined)} message={message} />
         </FlashContext.Provider>
     );
 };
