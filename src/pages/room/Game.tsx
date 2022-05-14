@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
-import { gameEmitter, getTokenData, sendEvent } from "../api";
-import { IncorrectBroadcastEvent, PlayerData } from "../interfaces";
+import { gameEmitter, getTokenData, sendEvent } from "../../api";
+import { IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
-import sounds from "../sounds";
+import sounds from "../../sounds";
+import styles from "./Room.module.scss";
 
 import useSound from "use-sound";
-import useAnimated from "./Animated";
+import useAnimated from "../../components/Animated";
 
 const PlayerText = (props: { player: PlayerData }) => {
     const { player } = props;
@@ -81,10 +82,10 @@ const Game = () => {
         gameEmitter.addListener("correct", playCorrect);
 
         return () => {
-            gameEmitter.removeListener("incorrect", () => playIncorrect);
-            gameEmitter.removeListener("correct", () => playCorrect);
+            gameEmitter.removeListener("incorrect", playIncorrect);
+            gameEmitter.removeListener("correct", playCorrect);
         };
-    });
+    }, [playCorrect, playIncorrect]);
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.cuid === localUuid;
@@ -110,8 +111,8 @@ const Game = () => {
     }, [state.startAt]);
 
     return (
-        <div className='game'>
-            <div className='board'>
+        <div className={styles.game}>
+            <div className={styles.board}>
                 {timeLeft > 0 && <div className='game-status'>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className='game-status'>Waiting for players...</div>}
                 {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && (

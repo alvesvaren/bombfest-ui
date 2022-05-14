@@ -8,7 +8,7 @@ import "./app.scss";
 import FlashMessageCard from "./components/FlashMessageCard";
 import * as Icons from "./components/Icons";
 import Narrow from "./components/Narrow";
-import Room from "./components/Room";
+import Room from "./pages/room/Room";
 import { useLoggedIn } from "./hooks";
 import NewRoom from "./pages/NewRoom";
 import Rooms from "./pages/Rooms";

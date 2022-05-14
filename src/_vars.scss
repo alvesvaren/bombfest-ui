@@ -1,0 +1,22 @@
+$nav-height: 3.5rem;
+$default-shadow: 0.17rem 0.17rem 0px #0004;
+$slim-shadow: 0.1rem 0.1rem 0px #0004;
+
+@mixin for-buttons {
+    button,
+    .button,
+    input[type="submit"],
+    input[type="reset"],
+    input[type="button"] {
+        @content;
+    }
+}
+
+@mixin centered {
+    display: flex;
+    &.inline {
+        display: inline-flex;
+    }
+    justify-content: center;
+    align-items: center;
+}

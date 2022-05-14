@@ -1,17 +1,21 @@
 import React from "react";
-import { sendEvent } from "../api";
-import { ChatMessage, useRoomSocket, useRoomState } from "./Room";
+import { sendEvent } from "../../api";
+import { ChatMessage } from "../../interfaces";
+import { useRoomSocket, useRoomState } from "./Room";
 // import styles from "./Chat.module.scss";
+import styles from "./Room.module.scss";
+
+const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleTimeString(undefined, { timeStyle: "short", hour12: false });
+};
 
 const Message = (props: { message: ChatMessage }) => {
     const roomState = useRoomState();
     const playerName = roomState.players.find(player => player.cuid === props.message.from)?.name;
     return (
-        <>
-            <li>
-                {playerName}: {props.message.text}
-            </li>
-        </>
+        <article>
+            <span>{formatDate(props.message.at)}</span> {playerName}: {props.message.text}
+        </article>
     );
 };
 
@@ -20,15 +24,15 @@ const Chat = () => {
     const roomSocket = useRoomSocket();
     const chatMessageFieldRef = React.useRef<HTMLInputElement>(null);
     return (
-        <section className='chat'>
-            <ul>
-                {roomState.chat.map((message, index) => (
+        <section className={styles.chat}>
+            <div>
+                {roomState.chat.map((message, index, array) => (
                     <Message key={index} message={message} />
                 ))}
-            </ul>
+            </div>
 
             <form
-            className="chat-input"
+                className={styles.chatInput}
                 onSubmit={e => {
                     e.preventDefault();
                     if (chatMessageFieldRef.current?.value) {

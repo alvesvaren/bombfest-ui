@@ -13,18 +13,13 @@ const cross = <Icon icon={faTimes} />;
 // const tickingBomb = <Icon icon={faBomb} className="ticking" />;
 
 const _ticking = keyframes`
-    5% {
-        transform: scale(1.1) scaleX(1.05) rotate(-5deg);
-    }
-    100% {
-        transform: scale(1) scaleX(0.95) rotate(3deg);
-    }`;
+    5% { transform: scale(1.1) scaleX(1.05) rotate(-5deg) }
+    100% { transform: scale(1) scaleX(0.95) rotate(3deg) }`;
 
 const TickingBomb = styled(Icon).attrs({ icon: faBomb })`
     animation: ${_ticking} 0.25s infinite;
 `;
 
 const tickingBomb = <TickingBomb />;
-
 
 export { bomb, plus, heart, play, users, cog, gamepad, cross, tickingBomb };

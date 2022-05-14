@@ -1,15 +1,11 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
-import { gameEmitter, joinRoom } from "../api";
-import { BaseGameState, defaultRules, GameBroadcastEvent } from "../interfaces";
+import { gameEmitter, joinRoom } from "../../api";
+import { BaseGameState, ChatMessage, defaultRules, GameBroadcastEvent } from "../../interfaces";
 import Chat from "./Chat";
 import Game from "./Game";
-
-export interface ChatMessage {
-    from: string;
-    text: string;
-}
+import styles from "./Room.module.scss";
 
 export interface RoomState extends BaseGameState {
     chat: ChatMessage[];
@@ -98,7 +94,7 @@ const Room = () => {
     return (
         <RoomSocketConnectionContext.Provider value={roomSocket}>
             <RoomStateContext.Provider value={currentRoomState}>
-                <div className='room'>
+                <div className={styles.room}>
                     <p className='error'>{errorMsg}</p>
                     <Game />
                     <Chat />

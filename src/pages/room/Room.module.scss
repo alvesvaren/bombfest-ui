@@ -1,0 +1,39 @@
+@import "../../vars";
+
+.room {
+    display: flex;
+    height: calc(100vh - $nav-height);
+}
+
+.game {
+    flex: 3;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    font-size: 1.5rem;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat {
+    background-color: #0004;
+    flex: 1;
+    min-width: 10rem;
+    display: flex;
+    flex-direction: column;
+    .chatInput {
+        margin-top: auto;
+        input {
+            width: 100%;
+        }
+    }
+}
