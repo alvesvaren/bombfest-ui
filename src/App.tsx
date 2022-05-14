@@ -60,7 +60,7 @@ const Index = () => {
 
     return (
         <Narrow>
-            <h1>{Icons.bomb} Bombfest</h1>
+            <h1>{Icons.tickingBomb} Bombfest</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type='text'

@@ -1,6 +1,7 @@
 import React from "react";
 import { sendEvent } from "../api";
 import { ChatMessage, useRoomSocket, useRoomState } from "./Room";
+// import styles from "./Chat.module.scss";
 
 const Message = (props: { message: ChatMessage }) => {
     const roomState = useRoomState();
