@@ -1,6 +1,6 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useUnmount } from "react-use";
 import { getTokenData, updateUsername } from "./api";
@@ -52,11 +52,16 @@ export const FlashContext = React.createContext<(message: FlashMessage) => void>
 
 const Index = () => {
     const [formUsername, setFormUsername] = React.useState(getTokenData()?.name || "");
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const returnTo = new URLSearchParams(location.search).get("return");
+
         await updateUsername(formUsername);
+        navigate(returnTo || "/rooms");
     };
 
     return (
@@ -83,7 +88,10 @@ const App = () => {
 
     React.useEffect(() => {
         commands.flash = {
-            callback: async (message: string, type: string) => void showFlash(message, type as any),
+            callback: async (message: string, type: string) => {
+                showFlash(message, type as any);
+                return "Showing flash message";
+            },
             help: "Show a flash message",
         };
 
@@ -92,9 +100,8 @@ const App = () => {
         };
     }, [showFlash]);
 
-
     if (!isLoggedIn && location.pathname !== "/") {
-        return <Navigate to='/' />;
+        return <Navigate to={{ pathname: "/", search: searchParams({ return: location.pathname }) }} />;
     }
 
     return (
@@ -102,7 +109,7 @@ const App = () => {
             <Navbar />
             <main>
                 <Routes>
-                    <Route path='*' element={isLoggedIn ? "" : <Navigate to={{ pathname: "/", search: searchParams({ return: location.pathname }) }} />} />
+                    {/* <Route path='*' element={isLoggedIn ? "" : <Navigate to={} />} /> */}
                     <Route index element={isLoggedIn ? <Navigate replace to='/rooms' /> : <Index />} />
                     <Route path='/rooms' element={<Rooms />} />
                     <Route path='/rooms/new' element={<NewRoom />} />
