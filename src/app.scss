@@ -259,6 +259,9 @@ a.card-link {
 
 .game-input {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     bottom: 1rem;
 }
 

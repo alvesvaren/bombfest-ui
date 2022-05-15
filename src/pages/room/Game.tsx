@@ -141,6 +141,7 @@ const Game = () => {
                     }
                 }}
             >
+                <span>{isLocalTurn && "Your turn:"}</span>
                 <input
                     ref={textInputRef}
                     type='text'
