@@ -14,6 +14,7 @@ import NewRoom from "./pages/NewRoom";
 import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
 import { searchParams } from "./searchparams";
+import commands, { Commands } from "./commandParser";
 
 const Navbar = () => {
     const isLoggedIn = useLoggedIn();
@@ -127,5 +128,15 @@ const WrappedApp = () => {
         </FlashContext.Provider>
     );
 };
+
+(window as any).executeCommand = <T extends keyof Commands>(command: T, ...args: Parameters<Commands[T]["callback"]>) => {
+    if (commands[command]) {
+        commands[command].callback(args as any).then(msg => {
+            console.log(msg);
+        })
+    } else {
+        console.log(`Unknown command: ${command}`);
+    }
+}
 
 export default WrappedApp;

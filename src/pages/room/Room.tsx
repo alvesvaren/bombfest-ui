@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
-import { gameEmitter, joinRoom } from "../../api";
+import { gameEmitter, joinRoom, sendEventWithResponse } from "../../api";
+import commands from "../../commandParser";
 import { useFlash } from "../../hooks";
 import { BaseGameState, ChatMessage, defaultRules, GameBroadcastEvent } from "../../interfaces";
 import Chat from "./Chat";
@@ -23,7 +24,7 @@ const defaultRoomState: RoomState = {
     rules: defaultRules,
     startAt: null,
     bombExplodesIn: null,
-    isPlaying: false
+    isPlaying: false,
 };
 
 const RoomStateContext = React.createContext<RoomState | null>(null);
@@ -46,7 +47,7 @@ export const useRoomEvent = (event: "incorrect" | "correct" | "damage" | "end" |
         gameEmitter.addListener(event, handler);
         return () => void gameEmitter.removeListener(event, handler);
     }, [event, handler]);
-}
+};
 
 const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomState => {
     switch (action.type) {
@@ -59,8 +60,8 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "leave":
             return { ...state, players: state.players.filter(p => p.cuid !== action.data.cuid) };
         case "start":
-            console.log("AWDAWDWDAWDAWD", state)
-            return { ...state, startAt: (new Date()).getTime() + action.data.in };
+            console.log("AWDAWDWDAWDAWD", state);
+            return { ...state, startAt: new Date().getTime() + action.data.in };
         case "text":
             return { ...state, players: state.players.map(p => (p.cuid === action.data.from ? { ...p, text: action.data.text } : p)) };
         case "incorrect":
@@ -94,19 +95,31 @@ const Room = () => {
         showFlash(e.message, "error");
     });
 
+    useEffect(() => {
+        const oldPing = commands.ping;
+        commands.ping = {
+            ...commands.ping,
+            callback: async () => {
+                const timeBefore = Date.now();
+                await sendEventWithResponse(roomSocket, "ping", undefined, timeBefore);
+                return Date.now() - timeBefore + "ms";
+            },
+        };
+
+        return () => {
+            commands.ping = oldPing;
+        };
+    }, [roomSocket]);
+
     (window as any).roomState = currentRoomState;
 
     useEffectOnce(() => {
         setErrorMsg("");
-        const ws = joinRoom(
-            roomId || "",
-            handleNewCurrentRoomState,
-            closeEvent => {
-                if (closeEvent.reason || !closeEvent.wasClean) {
-                    setErrorMsg(closeEvent.reason || "Connection closed unexpectedly");
-                }
+        const ws = joinRoom(roomId || "", handleNewCurrentRoomState, closeEvent => {
+            if (closeEvent.reason || !closeEvent.wasClean) {
+                setErrorMsg(closeEvent.reason || "Connection closed unexpectedly");
             }
-        );
+        });
 
         setRoomSocket(ws);
 

@@ -64,6 +64,25 @@ export const sendEvent = <T extends GameEvent>(ws: WebSocket | null, event: T["t
     return !!ws;
 };
 
+export const sendEventWithResponse = <T extends GameEvent>(ws: WebSocket | null, event: T["type"], data: T["data"], nonce: nonce) => {
+    return new Promise<GameEvent["data"]>((resolve, reject) => {
+        let listener: (e: WebSocketEventMap["message"]) =>  void;
+        listener = (e: WebSocketEventMap["message"]) => {
+            const respData = JSON.parse(e.data);
+            if (respData.nonce === nonce) {
+                ws?.removeEventListener("message", listener);
+                resolve(e.data);
+            }
+            setTimeout(() => {
+                ws?.removeEventListener("message", listener);
+                reject(new Error("Event timed out"));
+            }, 10000);
+        };
+        ws?.addEventListener("message", listener);
+        sendEvent(ws, event, data, nonce);
+    });
+};
+
 export const createRoom = async (name: string): Promise<RoomData> => {
     const response = await fetch(`${restEntryPoint}/rooms`, {
         method: "POST",
