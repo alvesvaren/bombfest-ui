@@ -1,5 +1,7 @@
 @import "../../vars";
 
+$chat-width: min(20rem, 30vw);
+
 .room {
     display: flex;
     height: calc(100vh - $nav-height);
@@ -14,7 +16,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: calc(100vw - 20rem);
+    width: calc(100vw - $chat-width);
 }
 
 .board {
@@ -30,7 +32,7 @@
 
 .chat {
     background-color: #0004;
-    width: 20rem;
+    width: $chat-width;
     display: flex;
     flex-direction: column;
     .chatInput {
