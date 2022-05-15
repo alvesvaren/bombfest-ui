@@ -9,7 +9,7 @@ import FlashMessageCard from "./components/FlashMessageCard";
 import * as Icons from "./components/Icons";
 import Narrow from "./components/Narrow";
 import Room from "./pages/room/Room";
-import { useLoggedIn } from "./hooks";
+import { useFlash, useLoggedIn } from "./hooks";
 import NewRoom from "./pages/NewRoom";
 import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
@@ -79,6 +79,19 @@ const Index = () => {
 const App = () => {
     const isLoggedIn = useLoggedIn();
     const location = useLocation();
+    const showFlash = useFlash();
+
+    React.useEffect(() => {
+        commands.flash = {
+            callback: async (message: string, type: string) => void showFlash(message, type as any),
+            help: "Show a flash message",
+        };
+
+        return () => {
+            delete commands.flash;
+        };
+    }, [showFlash]);
+
 
     if (!isLoggedIn && location.pathname !== "/") {
         return <Navigate to='/' />;
@@ -131,7 +144,7 @@ const WrappedApp = () => {
 
 (window as any).executeCommand = <T extends keyof Commands>(command: T, ...args: Parameters<Commands[T]["callback"]>) => {
     if (commands[command]) {
-        commands[command].callback(args as any).then(msg => {
+        commands[command].callback(...(args as any)).then(msg => {
             console.log(msg);
         });
     } else {

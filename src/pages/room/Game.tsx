@@ -5,6 +5,7 @@ import { EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../in
 import { useRoomEvent, useRoomSocket, useRoomState } from "./Room";
 import sounds from "../../sounds";
 import styles from "./Room.module.scss";
+import * as Icons from '../../components/Icons';
 
 import useSound from "use-sound";
 import useAnimated from "../../components/Animated";
@@ -123,6 +124,7 @@ const Game = () => {
                         Join
                     </button>
                 )}
+                <h1>{state.isPlaying && Icons.tickingBomb}</h1>
                 {state.prompt && <h2>{state.prompt}</h2>}
                 {playingPlayers.map((player, index) => {
                     return <PlayerText key={index} player={player} />;
