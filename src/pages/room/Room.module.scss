@@ -1,17 +1,20 @@
 @import "../../vars";
 
 .room {
-    display: flex;
+    display: grid;
     height: calc(100vh - $nav-height);
+    grid-template-columns: minmax(0, 3fr) 1fr;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .game {
-    flex: 3;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    max-width: 100%;
 }
 
 .board {
@@ -26,7 +29,6 @@
 
 .chat {
     background-color: #0004;
-    flex: 1;
     min-width: 10rem;
     display: flex;
     flex-direction: column;

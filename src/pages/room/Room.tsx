@@ -87,7 +87,6 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
 const Room = () => {
     const params = useParams();
     const roomId = params.id || "";
-    const [errorMsg, setErrorMsg] = React.useState("");
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
     const showFlash = useFlash();
@@ -114,10 +113,9 @@ const Room = () => {
     (window as any).roomState = currentRoomState;
 
     useEffectOnce(() => {
-        setErrorMsg("");
         const ws = joinRoom(roomId || "", handleNewCurrentRoomState, closeEvent => {
             if (closeEvent.reason || !closeEvent.wasClean) {
-                setErrorMsg(closeEvent.reason || "Connection closed unexpectedly");
+                showFlash(closeEvent.reason || "Connection closed unexpectedly", "warning")
             }
         });
 
@@ -130,7 +128,6 @@ const Room = () => {
         <RoomSocketConnectionContext.Provider value={roomSocket}>
             <RoomStateContext.Provider value={currentRoomState}>
                 <div className={styles.room}>
-                    <p className='error'>{errorMsg}</p>
                     <Game />
                     <Chat />
                 </div>
