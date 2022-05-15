@@ -238,15 +238,14 @@ a.card-link {
 }
 
 .column {
-    display: flex;
     flex-direction: column;
 }
 
 form:not(.column) {
     margin-bottom: 1rem;
-    :last-child {
-        margin-left: 1rem;
-    }
+    margin-right: 1rem;
+    display: inline-flex;
+    gap: 1rem;
 }
 
 @keyframes shake {
