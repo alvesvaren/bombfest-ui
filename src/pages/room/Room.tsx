@@ -60,7 +60,6 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
         case "leave":
             return { ...state, players: state.players.filter(p => p.cuid !== action.data.cuid) };
         case "start":
-            console.log("AWDAWDWDAWDAWD", state);
             return { ...state, startAt: new Date().getTime() + action.data.in };
         case "text":
             return { ...state, players: state.players.map(p => (p.cuid === action.data.from ? { ...p, text: action.data.text } : p)) };
@@ -80,7 +79,6 @@ const roomStateReducer = (state: RoomState, action: GameBroadcastEvent): RoomSta
             gameEmitter.emit("error", action.data);
             break;
     }
-    console.log(state, action);
     return state;
 };
 

@@ -109,8 +109,6 @@ const Game = () => {
         }
     }, [state.startAt]);
 
-    console.log(state.isPlaying);
-
     return (
         <div className={styles.game}>
             <div className={styles.board}>

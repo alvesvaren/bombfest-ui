@@ -29,7 +29,6 @@ const Chat = () => {
     const chatDep = JSON.stringify(roomState.chat);
 
     useEffect(() => {
-        console.log(atChatBottom.current);
         if (!chatMessagesRef.current) return;
 
         if (atChatBottom.current) {
