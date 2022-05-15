@@ -12,6 +12,12 @@ $slim-shadow: 0.1rem 0.1rem 0px #0004;
     }
 }
 
+@mixin for-mobile {
+    @media (max-width: 960px) {
+        @content;
+    }
+}
+
 @mixin centered {
     display: flex;
     &.inline {

@@ -23,6 +23,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 body {
@@ -32,7 +33,7 @@ body {
 :root {
     font-family: "Nunito", sans-serif;
     color: var(--accent);
-    font-size: 20px;
+    font-size: min(20px, 4vw);
 }
 
 nav {
@@ -121,6 +122,9 @@ input {
     font-weight: inherit;
     border: none;
     box-shadow: $default-shadow;
+    @include for-mobile {
+        width: 100%;
+    }
 }
 
 a.card-link {
@@ -151,6 +155,10 @@ a.card-link {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin-top: 1rem;
+
+    @include for-mobile {
+        grid-template-columns: 1fr;
+    }
 }
 
 .listed-room {
@@ -221,14 +229,6 @@ a.card-link {
     color: #77ffaa;
 }
 
-.game-input {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    bottom: 1rem;
-}
-
 .shake {
     animation: shake 250ms ease-in-out forwards;
 }
@@ -241,11 +241,12 @@ a.card-link {
     flex-direction: column;
 }
 
-form:not(.column) {
+form:not(.inline) {
     margin-bottom: 1rem;
     margin-right: 1rem;
     display: inline-flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 @keyframes shake {

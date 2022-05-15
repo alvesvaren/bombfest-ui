@@ -19,6 +19,18 @@ $chat-width: min(20rem, 30vw);
     width: calc(100vw - $chat-width);
 }
 
+.gameStatus {
+    padding-bottom: 1rem;
+}
+
+.gameInput {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    bottom: 1rem;
+}
+
 .board {
     font-size: 1.5rem;
     width: 100%;
@@ -35,6 +47,11 @@ $chat-width: min(20rem, 30vw);
     width: $chat-width;
     display: flex;
     flex-direction: column;
+
+    @include for-mobile {
+        display: none;
+    }
+
     .chatInput {
         margin-top: auto;
         input {

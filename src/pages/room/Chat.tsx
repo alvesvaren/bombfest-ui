@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { useEffect } from "react";
 import { sendEvent } from "../../api";
 import { ChatMessage } from "../../interfaces";
@@ -57,7 +58,7 @@ const Chat = () => {
             </div>
             <div className='spacer' />
             <form
-                className={styles.chatInput}
+                className={classNames("inline", styles.chatInput)}
                 onSubmit={e => {
                     e.preventDefault();
                     if (chatMessageFieldRef.current?.value) {

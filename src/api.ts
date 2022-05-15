@@ -1,8 +1,9 @@
 import { GameEvent, nonce, RoomData, TokenData } from "./interfaces";
 import EventEmitter from "events";
+import { searchParams } from "./searchparams";
 
-const restEntryPoint = process.env.REACT_APP_REST_ENTRYPOINT;
-const wsEntryPoint = process.env.REACT_APP_WS_ENTRYPOINT;
+const restEntryPoint = "";
+const wsEntryPoint = `ws${window.location.protocol === "https:" ? "s" : ""}://${window.location.host}`;
 
 export const gameEmitter = new EventEmitter();
 export const authEmitter = new EventEmitter();
@@ -39,7 +40,7 @@ export const getTokenData = (): TokenData | null => {
 };
 
 export const fetchRooms = async (): Promise<RoomData[]> => {
-    const response = await fetch(restEntryPoint + "/rooms");
+    const response = await fetch(restEntryPoint + "/api/rooms");
     if (!response.ok) {
         throw new Error(response.statusText);
     }
@@ -47,9 +48,7 @@ export const fetchRooms = async (): Promise<RoomData[]> => {
 };
 
 export const joinRoom = (cuid: string, onMessage?: (e: any) => void, onClose?: (e: CloseEvent) => void) => {
-    const searchParams = new URLSearchParams();
-    searchParams.set("authorization", getToken() || "");
-    const ws = new WebSocket(`${wsEntryPoint}/room/${cuid}/ws?${searchParams.toString()}`);
+    const ws = new WebSocket(`${wsEntryPoint}/api/room/${cuid}/ws${searchParams({ authorization: getToken() || "" })}`);
     ws.addEventListener("message", e => (onMessage || (() => {}))(JSON.parse(e.data)));
     ws.addEventListener("close", e => {
         console.info("Websocket connection closed", e);
@@ -84,7 +83,7 @@ export const sendEventWithResponse = <T extends GameEvent>(ws: WebSocket | null,
 };
 
 export const createRoom = async (name: string): Promise<RoomData> => {
-    const response = await fetch(`${restEntryPoint}/rooms`, {
+    const response = await fetch(`${restEntryPoint}/api/rooms`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -102,7 +101,7 @@ export const createRoom = async (name: string): Promise<RoomData> => {
 };
 
 export const updateUsername = async (username: string) => {
-    const result = await fetch(`${restEntryPoint}/account`, {
+    const result = await fetch(`${restEntryPoint}/api/account`, {
         method: "POST",
         body: JSON.stringify({
             name: username,
