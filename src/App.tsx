@@ -109,14 +109,20 @@ const App = () => {
             <Navbar />
             <main>
                 <Routes>
-                    {/* <Route path='*' element={isLoggedIn ? "" : <Navigate to={} />} /> */}
                     <Route index element={isLoggedIn ? <Navigate replace to='/rooms' /> : <Index />} />
                     <Route path='/rooms' element={<Rooms />} />
                     <Route path='/rooms/new' element={<NewRoom />} />
                     <Route path='/room/:id' element={<Room />} />
                     <Route path='/settings' element={<Settings />} />
 
-                    <Route path='*' element={<h1>404 Not found</h1>} />
+                    <Route
+                        path='*'
+                        element={
+                            <Narrow>
+                                <h1>404 Not found</h1>
+                            </Narrow>
+                        }
+                    />
                 </Routes>
             </main>
         </>
