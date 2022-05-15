@@ -8,8 +8,12 @@ const FlashMessageCard: React.FC<{message?: FlashMessage, clearFlash: () => void
     if (!message) {
         return <></>;
     }
+
+    const icon = Icons[message.type];
+
     return (
         <div className={classNames("flash", message.type)}>
+            <div className="flash-icon flat inline">{icon}</div>
             <span>{message.text}</span>
             <button className="flat inline squared" onClick={clearFlash}>{Icons.cross}</button>
         </div>

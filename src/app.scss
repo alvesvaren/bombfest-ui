@@ -67,6 +67,9 @@ article h1 {
     border-radius: 0.3rem;
     padding: 0rem 1rem;
     padding-right: 0;
+    .flash-icon {
+        margin-right: 0.5rem;
+    }
 }
 
 .create-new-room {
@@ -195,6 +198,10 @@ a.card-link {
     .svg-inline--fa {
         filter: none;
     }
+}
+
+.flat .svg-inline--fa {
+    filter: none;
 }
 
 .dead {

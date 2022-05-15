@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { sendEvent } from "../../api";
 import { ChatMessage } from "../../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
@@ -23,14 +23,40 @@ const Chat = () => {
     const roomState = useRoomState();
     const roomSocket = useRoomSocket();
     const chatMessageFieldRef = React.useRef<HTMLInputElement>(null);
+    const chatMessagesRef = React.useRef<HTMLDivElement>(null);
+    const atChatBottom = React.useRef(true);
+
+    const chatDep = JSON.stringify(roomState.chat);
+
+    useEffect(() => {
+        console.log(atChatBottom.current);
+        if (!chatMessagesRef.current) return;
+
+        if (atChatBottom.current) {
+            chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+        }
+    }, [chatDep, atChatBottom]);
+
+    useEffect(() => {
+        const scrollHandler = () => {
+            const element = chatMessagesRef.current;
+            if (!element) return;
+
+            atChatBottom.current = element.scrollHeight - element.scrollTop - element.clientHeight === 0;
+        };
+        const current = chatMessagesRef.current;
+        current?.addEventListener("scroll", scrollHandler, { capture: false, passive: true });
+        return () => current?.removeEventListener("scroll", scrollHandler);
+    }, [chatMessagesRef]);
+
     return (
         <section className={styles.chat}>
-            <div>
+            <div className={styles.chatMessages} ref={chatMessagesRef}>
                 {roomState.chat.map((message, index, array) => (
                     <Message key={index} message={message} />
                 ))}
             </div>
-
+            <div className='spacer' />
             <form
                 className={styles.chatInput}
                 onSubmit={e => {

@@ -35,5 +35,10 @@
         input {
             width: 100%;
         }
+    };
+
+    .chatMessages {
+        overflow-y: auto;
+        word-break: break-all;
     }
 }
