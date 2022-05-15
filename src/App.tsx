@@ -15,6 +15,8 @@ import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
 import { searchParams } from "./searchparams";
 import commands, { Commands } from "./commandParser";
+import classNames from "classnames";
+import styles from "./App.module.scss";
 
 const Navbar = () => {
     const isLoggedIn = useLoggedIn();
@@ -65,8 +67,8 @@ const Index = () => {
     };
 
     return (
-        <Narrow>
-            <h1>{Icons.tickingBomb} Bombfest</h1>
+        <Narrow className="center column">
+            <h1 className={classNames("center", styles.title)}>{Icons.tickingBomb} Bombfest</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type='text'

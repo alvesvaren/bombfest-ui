@@ -233,6 +233,22 @@ a.card-link {
     animation: shake 250ms ease-in-out forwards;
 }
 
+.center {
+    @include centered;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+form:not(.column) {
+    margin-bottom: 1rem;
+    :last-child {
+        margin-left: 1rem;
+    }
+}
+
 @keyframes shake {
     10% {
         transform: translateX(-5%);
