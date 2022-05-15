@@ -7,7 +7,7 @@ const useAnimated = (animatedClass: string): [internalAnimationComponent, () => 
     const [animating, setAnimating] = React.useState(false);
 
     const start = () => setAnimating(true);
-    
+
     const classes: Argument = {};
     classes[animatedClass] = animating;
 
@@ -18,7 +18,6 @@ const useAnimated = (animatedClass: string): [internalAnimationComponent, () => 
             </div>
         );
     };
-
 
     return [internalComponent, start];
 };

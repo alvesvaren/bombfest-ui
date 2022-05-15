@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React from "react";
 import { FlashMessage } from "../App";
-import * as Icons from './Icons';
+import * as Icons from "./Icons";
 
-const FlashMessageCard: React.FC<{message?: FlashMessage, clearFlash: () => void}> = props => {
+const FlashMessageCard: React.FC<{ message?: FlashMessage; clearFlash: () => void }> = props => {
     const { message, clearFlash } = props;
     if (!message) {
         return <></>;
@@ -13,9 +13,11 @@ const FlashMessageCard: React.FC<{message?: FlashMessage, clearFlash: () => void
 
     return (
         <div className={classNames("flash", message.type)}>
-            <div className="flash-icon flat inline">{icon}</div>
+            <div className='flash-icon flat inline'>{icon}</div>
             <span>{message.text}</span>
-            <button className="flat inline squared" onClick={clearFlash}>{Icons.cross}</button>
+            <button className='flat inline squared' onClick={clearFlash}>
+                {Icons.cross}
+            </button>
         </div>
     );
 };

@@ -79,7 +79,7 @@ const Game = () => {
 
     const handleEnd = (data: EndBroadcastEvent["data"]) => {
         showFlash(`Game over! ${state.players.find(player => data.winner === player.cuid)?.name} won!`, "success");
-    }
+    };
 
     useRoomEvent("correct", playCorrect);
     useRoomEvent("incorrect", playIncorrect);

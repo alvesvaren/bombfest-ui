@@ -1,5 +1,19 @@
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faGamepad, faBomb, faPlus, faHeart, faPlay, faUsers, faCog, faTimes, faSkullCrossbones, faSquareXmark, faWarning, faCircleInfo, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+    faGamepad,
+    faBomb,
+    faPlus,
+    faHeart,
+    faPlay,
+    faUsers,
+    faCog,
+    faTimes,
+    faSkullCrossbones,
+    faSquareXmark,
+    faWarning,
+    faCircleInfo,
+    faCircleCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import styled, { keyframes } from "styled-components";
 
 const bomb = <Icon icon={faBomb} />;

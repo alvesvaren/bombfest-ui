@@ -36,12 +36,16 @@ const RoomList: React.FC = props => {
 };
 
 const Rooms = () => {
-
     return (
         <Narrow>
-            <div className="split">
+            <div className='split'>
                 <h1>Rooms</h1>
-                <div className="create-new-room">Create room <Link to="/rooms/new" className="inline button">{Icons.plus}</Link> </div>
+                <div className='create-new-room'>
+                    Create room{" "}
+                    <Link to='/rooms/new' className='inline button'>
+                        {Icons.plus}
+                    </Link>{" "}
+                </div>
             </div>
 
             <RoomList />

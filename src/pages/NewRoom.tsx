@@ -30,7 +30,7 @@ const NewRoom: React.FC = props => {
                         }
                         queryClient.invalidateQueries("rooms");
                         showFlash("Room created", "success");
-                        navigate(`/room/${data.cuid}`)
+                        navigate(`/room/${data.cuid}`);
                     }
                 }}
             >

@@ -29,12 +29,11 @@ export const useTokenData = () => {
     const [tokenData, setTokenData] = React.useState<TokenData | null>(getTokenData());
 
     React.useEffect(() => {
-        setTokenData(getTokenData())
+        setTokenData(getTokenData());
         const handler = (e?: StorageEvent) => {
             if (!e || (e?.storageArea === localStorage && e?.key === "token")) {
                 setTokenData(getTokenData());
             }
-
         };
 
         window.addEventListener("storage", handler);
@@ -54,4 +53,4 @@ export const useLoggedIn = () => {
     const isLoggedIn = !!tokenData?.sub;
 
     return isLoggedIn;
-}
+};

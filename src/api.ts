@@ -17,7 +17,7 @@ export const getToken = () => {
 export const friendlyDictNames = {
     sv_SE: "Swedish",
     en_US: "English",
-}
+};
 
 export const saveToken = (cuid: string) => {
     localStorage.setItem("token", cuid);
@@ -66,7 +66,7 @@ export const sendEvent = <T extends GameEvent>(ws: WebSocket | null, event: T["t
 
 export const sendEventWithResponse = <T extends GameEvent>(ws: WebSocket | null, event: T["type"], data: T["data"], nonce: nonce) => {
     return new Promise<GameEvent["data"]>((resolve, reject) => {
-        let listener: (e: WebSocketEventMap["message"]) =>  void;
+        let listener: (e: WebSocketEventMap["message"]) => void;
         listener = (e: WebSocketEventMap["message"]) => {
             const respData = JSON.parse(e.data);
             if (respData.nonce === nonce) {

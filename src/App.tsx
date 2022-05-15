@@ -133,10 +133,10 @@ const WrappedApp = () => {
     if (commands[command]) {
         commands[command].callback(args as any).then(msg => {
             console.log(msg);
-        })
+        });
     } else {
         console.log(`Unknown command: ${command}`);
     }
-}
+};
 
 export default WrappedApp;
