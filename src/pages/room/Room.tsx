@@ -96,16 +96,15 @@ const Room = () => {
 
     useEffect(() => {
         commands.ping = {
-            ...commands.ping,
             callback: async () => {
                 const timeBefore = Date.now();
                 await sendEventWithResponse(roomSocket, "ping", undefined, timeBefore);
                 return Date.now() - timeBefore + "ms";
             },
+            help: "Ping the server",
         };
 
         commands.list = {
-            ...commands.ping,
             callback: async () => {
                 const list = currentRoomState.players
                     .map(player => {
@@ -114,6 +113,7 @@ const Room = () => {
                     .join("\n");
                 return `${currentRoomState.players.length} players in this room:\n${list}`;
             },
+            help: "List all players in this room",
         };
 
         return () => {
