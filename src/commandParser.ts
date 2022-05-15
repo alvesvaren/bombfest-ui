@@ -5,8 +5,6 @@ export interface Command<T extends string[]> {
 
 export type Commands = {
     [key: string]: Command<string[]>;
-    help: Command<[]>;
-    ping: Command<[string]>;
 }
 
 const commands: Commands = {
@@ -20,14 +18,7 @@ const commands: Commands = {
             return resp;
         },
         help: "Show this help message",
-    },
-    ping: {
-        callback: async (nonce: string) => {
-            console.log(nonce);
-            throw new Error("Not available");
-        },
-        help: "Ping the server",
-    },
+    }
 };
 
 export default commands;

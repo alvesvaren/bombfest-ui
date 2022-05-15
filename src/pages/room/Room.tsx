@@ -95,7 +95,6 @@ const Room = () => {
     });
 
     useEffect(() => {
-        const oldPing = commands.ping;
         commands.ping = {
             ...commands.ping,
             callback: async () => {
@@ -105,17 +104,30 @@ const Room = () => {
             },
         };
 
-        return () => {
-            commands.ping = oldPing;
+        commands.list = {
+            ...commands.ping,
+            callback: async () => {
+                const list = currentRoomState.players
+                    .map(player => {
+                        return `    ${player.cuid} (${player.name})`;
+                    })
+                    .join("\n");
+                return `${currentRoomState.players.length} players in this room:\n${list}`;
+            },
         };
-    }, [roomSocket]);
+
+        return () => {
+            delete commands.ping;
+            delete commands.list;
+        };
+    }, [roomSocket, currentRoomState]);
 
     (window as any).roomState = currentRoomState;
 
     useEffectOnce(() => {
         const ws = joinRoom(roomId || "", handleNewCurrentRoomState, closeEvent => {
             if (closeEvent.reason || !closeEvent.wasClean) {
-                showFlash(closeEvent.reason || "Connection closed unexpectedly", "warning")
+                showFlash(closeEvent.reason || "Connection closed unexpectedly", "warning");
             }
         });
 
