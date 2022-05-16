@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
-import { gameEmitter, getTokenData, sendEvent } from "../../api";
-import { EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
+import { getTokenData, sendEvent } from "../../api";
+import { CorrectBroadcastEvent, EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
 import { useRoomEvent, useRoomSocket, useRoomState } from "./Room";
 import sounds from "../../sounds";
 import styles from "./Room.module.scss";
@@ -17,16 +17,10 @@ const PlayerText = (props: { player: PlayerData }) => {
     const { playingPlayer } = usePlayingPlayers();
     const [Shake, startShake] = useAnimated("shake");
 
-    useEffect(() => {
-        const handleIncorrect = (e: IncorrectBroadcastEvent["data"]) => {
-            if (e.for === player.cuid) {
-                startShake();
-            }
-        };
+    useRoomEvent<IncorrectBroadcastEvent>("incorrect", e => {
+        if (e.for === player.cuid) startShake();
+    })
 
-        gameEmitter.addListener("incorrect", handleIncorrect);
-        return () => void gameEmitter.removeListener("incorrect", handleIncorrect);
-    });
     return (
         <div className={classNames({ current: player.cuid === playingPlayer?.cuid, dead: !player.alive, disconnected: !player.connected })}>
             <span className='name'>
@@ -82,10 +76,9 @@ const Game = () => {
         showFlash(`Game over! ${state.players.find(player => data.winner === player.cuid)?.name} won!`, "success");
     };
 
-    useRoomEvent("correct", playCorrect);
-    useRoomEvent("incorrect", playIncorrect);
-
-    useRoomEvent("end", handleEnd);
+    useRoomEvent<CorrectBroadcastEvent>("correct", () => playCorrect());
+    useRoomEvent<IncorrectBroadcastEvent>("incorrect", () => playIncorrect());
+    useRoomEvent<EndBroadcastEvent>("end", handleEnd);
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
     const isLocalTurn = playingPlayer?.cuid === localUuid;

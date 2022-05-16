@@ -3,7 +3,7 @@ import EventEmitter from "events";
 import { searchParams } from "./searchparams";
 
 const apiEntryPoint = "/api";
-const wsEntryPoint = `ws${window.location.protocol === "https:" ? "s" : ""}://${window.location.host}/${apiEntryPoint}`;
+const wsEntryPoint = `ws${window.location.protocol === "https:" ? "s" : ""}://${window.location.host}${apiEntryPoint}`;
 
 export const gameEmitter = new EventEmitter();
 export const authEmitter = new EventEmitter();

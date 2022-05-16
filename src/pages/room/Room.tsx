@@ -4,7 +4,7 @@ import { useEffectOnce } from "react-use";
 import { gameEmitter, joinRoom, sendEventWithResponse } from "../../api";
 import commands from "../../commandParser";
 import { useFlash } from "../../hooks";
-import { BaseGameState, ChatMessage, defaultRules, GameBroadcastEvent } from "../../interfaces";
+import { BaseGameState, ChatMessage, defaultRules, ErrorEvent, GameBroadcastEvent } from "../../interfaces";
 import Chat from "./Chat";
 import Game from "./Game";
 import styles from "./Room.module.scss";
@@ -42,7 +42,7 @@ export const useRoomSocket = () => {
     return React.useContext(RoomSocketConnectionContext);
 };
 
-export const useRoomEvent = (event: "incorrect" | "correct" | "damage" | "end" | "error", handler: (data: any) => void) => {
+export const useRoomEvent = <T extends GameBroadcastEvent>(event: T["type"], handler: (data: T["data"]) => void) => {
     React.useEffect(() => {
         gameEmitter.addListener(event, handler);
         return () => void gameEmitter.removeListener(event, handler);
@@ -88,8 +88,8 @@ const Room = () => {
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
     const showFlash = useFlash();
-    useRoomEvent("error", (e: ErrorEvent) => {
-        showFlash(e.message, "error");
+    useRoomEvent<ErrorEvent>("error", e => {
+        showFlash(e.message || "Unknown error", "error");
     });
 
     useEffect(() => {
