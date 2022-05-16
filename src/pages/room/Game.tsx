@@ -5,7 +5,7 @@ import { CorrectBroadcastEvent, EndBroadcastEvent, IncorrectBroadcastEvent, Play
 import { useRoomEvent, useRoomSocket, useRoomState } from "./Room";
 import sounds from "../../sounds";
 import styles from "./Room.module.scss";
-import * as Icons from '../../components/Icons';
+import * as Icons from "../../components/Icons";
 
 import useSound from "use-sound";
 import useAnimated from "../../components/Animated";
@@ -19,7 +19,7 @@ const PlayerText = (props: { player: PlayerData }) => {
 
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", e => {
         if (e.for === player.cuid) startShake();
-    })
+    });
 
     return (
         <div className={classNames({ current: player.cuid === playingPlayer?.cuid, dead: !player.alive, disconnected: !player.connected })}>
@@ -109,13 +109,7 @@ const Game = () => {
                 {timeLeft > 0 && <div className={styles.gameStatus}>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
                 {waitingForPlayers && <div className={styles.gameStatus}>Waiting for players...</div>}
                 {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && !state.isPlaying && (
-                    <button
-                        onClick={() => {
-                            sendEvent(socket, "play", {});
-                        }}
-                    >
-                        Join
-                    </button>
+                    <button onClick={() => sendEvent(socket, "play", {})}>Join</button>
                 )}
                 <h1>{state.isPlaying && Icons.tickingBomb}</h1>
                 {state.prompt && <h2>{state.prompt}</h2>}
