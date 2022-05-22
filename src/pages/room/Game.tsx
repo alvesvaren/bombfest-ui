@@ -23,39 +23,38 @@ const PlayerText = (props: { player: PlayerData }) => {
     });
 
     useRoomEvent<DamageBroadcastEvent>("damage", e => {
-        console.log(e.for);
-        if (e.for === player.cuid) startDeathShake();
+        if (e.for === player.cuid) setTimeout(startDeathShake, 2);
     });
 
+    const newParts = React.useMemo(() => {
+        const parts: string[] = player.text.split(state.prompt || "");
+        const newParts: React.ReactNode[] = [];
+        let hasInserted = false;
+        parts.forEach((part, index) => {
+            if (part) newParts.push(part);
+            if (!hasInserted) {
+                newParts.push(
+                    <span key={part + index} className='matching'>
+                        {state.prompt}
+                    </span>
+                );
+                hasInserted = true;
+            } else newParts.push(state.prompt);
+        });
+        newParts.pop();
+        return newParts;
+    }, [player.text, state.prompt]);
+
+    const isCurrentPlayer = player.cuid === playingPlayer?.cuid;
+
     return (
-        <div className={classNames({ current: player.cuid === playingPlayer?.cuid, dead: !player.alive, disconnected: !player.connected })}>
+        <div className={classNames({ current: isCurrentPlayer, dead: !player.alive, disconnected: !player.connected })}>
             <DeathShake>
                 <span className='name'>
                     {player.name} ({player.lives} hp):{" "}
                 </span>
                 <Shake>
-                    {state.prompt && (
-                        <span className='text'>
-                            {(() => {
-                                const parts: React.ReactNode[] = player.text.split(state.prompt);
-                                const newParts: typeof parts = [];
-                                let hasInserted = false;
-                                parts.forEach(part => {
-                                    if (part) {
-                                        newParts.push(part);
-                                    }
-                                    if (!hasInserted) {
-                                        newParts.push(<span className='matching'>{state.prompt}</span>);
-                                        hasInserted = true;
-                                    } else {
-                                        newParts.push(state.prompt);
-                                    }
-                                });
-                                newParts.pop();
-                                return newParts;
-                            })()}
-                        </span>
-                    )}
+                    <span className='text'>{isCurrentPlayer ? newParts : state.prompt}</span>
                 </Shake>
             </DeathShake>
         </div>
@@ -95,7 +94,10 @@ const Game = () => {
     useEffect(() => {
         if (isLocalTurn) {
             setTimeout(() => {
-                textInputRef.current?.focus();
+                if (textInputRef.current) {
+                    textInputRef.current.value = "";
+                    textInputRef.current.focus();
+                }
             }, 0);
         }
     }, [isLocalTurn]);
@@ -123,8 +125,8 @@ const Game = () => {
                 )}
                 <h1>{state.isPlaying && Icons.tickingBomb}</h1>
                 {state.prompt && <h2>{state.prompt}</h2>}
-                {playingPlayers.map((player, index) => {
-                    return <PlayerText key={index} player={player} />;
+                {playingPlayers.map(player => {
+                    return <PlayerText key={player.cuid} player={player} />;
                 })}
             </div>
 
