@@ -30,8 +30,14 @@ export const deleteToken = () => {
     authEmitter.emit("auth-changed");
 };
 
-export const jwtToJson = (token?: string) => {
-    return JSON.parse(atob(token?.split(".")[1] || "{}"));
+export const jwtToJson = (token?: string): TokenData | null => {
+    try {
+        const tokenDataPart = token?.split(".")[1];
+        if (!tokenDataPart) return null;
+        return JSON.parse(atob(tokenDataPart));
+    } catch (e) {
+        return null;
+    }
 };
 
 export const getTokenData = (): TokenData | null => {

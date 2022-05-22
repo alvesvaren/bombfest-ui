@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
-import { gameEmitter, joinRoom, sendEventWithResponse } from "../../api";
+import { deleteToken, gameEmitter, joinRoom, sendEventWithResponse } from "../../api";
 import commands from "../../commandParser";
 import { useFlash } from "../../hooks";
-import { BaseGameState, ChatMessage, defaultRules, ErrorEvent, GameBroadcastEvent } from "../../interfaces";
+import { BaseGameState, ChatMessage, CloseReason, defaultRules, ErrorEvent, GameBroadcastEvent } from "../../interfaces";
 import Chat from "./Chat";
 import Game from "./Game";
 import styles from "./Room.module.scss";
@@ -88,6 +88,7 @@ const Room = () => {
     const [roomSocket, setRoomSocket] = React.useState<WebSocket | null>(null);
     const [currentRoomState, handleNewCurrentRoomState] = React.useReducer(roomStateReducer, defaultRoomState);
     const showFlash = useFlash();
+    const navigate = useNavigate();
     useRoomEvent<ErrorEvent>("error", e => {
         showFlash(e.message || "Unknown error", "error");
     });
@@ -126,6 +127,14 @@ const Room = () => {
         const ws = joinRoom(roomId || "", handleNewCurrentRoomState, closeEvent => {
             if (closeEvent.reason || !closeEvent.wasClean) {
                 showFlash(closeEvent.reason || "Connection closed unexpectedly", "warning");
+                switch (closeEvent.code) {
+                    case CloseReason.NotFound:
+                        navigate("/rooms");
+                        break;
+                    case CloseReason.InvalidAuthorizationToken:
+                        deleteToken();
+                        break;
+                }
             }
         });
 
