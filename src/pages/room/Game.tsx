@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
 import { getTokenData, sendEvent } from "../../api";
-import { CorrectBroadcastEvent, EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
+import { CorrectBroadcastEvent, DamageBroadcastEvent, EndBroadcastEvent, IncorrectBroadcastEvent, PlayerData } from "../../interfaces";
 import { useRoomEvent, useRoomSocket, useRoomState } from "./Room";
 import sounds from "../../sounds";
 import styles from "./Room.module.scss";
@@ -16,40 +16,48 @@ const PlayerText = (props: { player: PlayerData }) => {
     const state = useRoomState();
     const { playingPlayer } = usePlayingPlayers();
     const [Shake, startShake] = useAnimated("shake");
+    const [DeathShake, startDeathShake] = useAnimated("death-shake");
 
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", e => {
         if (e.for === player.cuid) startShake();
     });
 
+    useRoomEvent<DamageBroadcastEvent>("damage", e => {
+        console.log(e.for);
+        if (e.for === player.cuid) startDeathShake();
+    });
+
     return (
         <div className={classNames({ current: player.cuid === playingPlayer?.cuid, dead: !player.alive, disconnected: !player.connected })}>
-            <span className='name'>
-                {player.name} ({player.lives} hp):{" "}
-            </span>
-            <Shake>
-                {state.prompt && (
-                    <span className='text'>
-                        {(() => {
-                            const parts: React.ReactNode[] = player.text.split(state.prompt);
-                            const newParts: typeof parts = [];
-                            let hasInserted = false;
-                            parts.forEach(part => {
-                                if (part) {
-                                    newParts.push(part);
-                                }
-                                if (!hasInserted) {
-                                    newParts.push(<span className='matching'>{state.prompt}</span>);
-                                    hasInserted = true;
-                                } else {
-                                    newParts.push(state.prompt);
-                                }
-                            });
-                            newParts.pop();
-                            return newParts;
-                        })()}
-                    </span>
-                )}
-            </Shake>
+            <DeathShake>
+                <span className='name'>
+                    {player.name} ({player.lives} hp):{" "}
+                </span>
+                <Shake>
+                    {state.prompt && (
+                        <span className='text'>
+                            {(() => {
+                                const parts: React.ReactNode[] = player.text.split(state.prompt);
+                                const newParts: typeof parts = [];
+                                let hasInserted = false;
+                                parts.forEach(part => {
+                                    if (part) {
+                                        newParts.push(part);
+                                    }
+                                    if (!hasInserted) {
+                                        newParts.push(<span className='matching'>{state.prompt}</span>);
+                                        hasInserted = true;
+                                    } else {
+                                        newParts.push(state.prompt);
+                                    }
+                                });
+                                newParts.pop();
+                                return newParts;
+                            })()}
+                        </span>
+                    )}
+                </Shake>
+            </DeathShake>
         </div>
     );
 };
@@ -70,6 +78,7 @@ const Game = () => {
     // const [playNext] = useSound(sounds.next);
     const [playCorrect] = useSound(sounds.tick, { volume: 0.8 });
     const [playIncorrect] = useSound(sounds.fail, { volume: 0.2 });
+    const [playDeath] = useSound(sounds.death, { volume: 0.4 });
     const showFlash = useFlash();
 
     const handleEnd = (data: EndBroadcastEvent["data"]) => {
@@ -78,6 +87,7 @@ const Game = () => {
 
     useRoomEvent<CorrectBroadcastEvent>("correct", () => playCorrect());
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", () => playIncorrect());
+    useRoomEvent<DamageBroadcastEvent>("damage", () => playDeath());
     useRoomEvent<EndBroadcastEvent>("end", handleEnd);
 
     const { playingPlayers, playingPlayer } = usePlayingPlayers();
