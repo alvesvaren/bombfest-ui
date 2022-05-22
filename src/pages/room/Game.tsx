@@ -76,7 +76,6 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = React.useState(0);
     const textInputRef = React.useRef<HTMLInputElement>(null);
     const volume = localStorage.volume || 1;
-    // const [playNext] = useSound(sounds.next);
     const [playCorrect] = useSound(sounds.tick, { volume });
     const [playIncorrect] = useSound(sounds.fail, { volume });
     const [playDeath] = useSound(sounds.death, { volume });

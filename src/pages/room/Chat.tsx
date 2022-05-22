@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React, { useEffect } from "react";
-import { sendEvent } from "../../api";
+import { executeCommand, sendEvent } from "../../api";
+import { useFlash } from "../../hooks";
 import { ChatMessage } from "../../interfaces";
 import { useRoomSocket, useRoomState } from "./Room";
 // import styles from "./Chat.module.scss";
@@ -10,9 +11,10 @@ const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString(undefined, { timeStyle: "short", hour12: false });
 };
 
-const Message = (props: { message: ChatMessage }) => {
+const Message = (props: { message: ChatMessage | { at: number; from: "@"; text: string } }) => {
     const roomState = useRoomState();
-    const playerName = roomState.players.find(player => player.cuid === props.message.from)?.name;
+    const isSystemMessage = props.message.from === "@";
+    const playerName = isSystemMessage ? "@" : roomState.players.find(player => player.cuid === props.message.from)?.name;
     return (
         <article>
             <span>{formatDate(props.message.at)}</span> {playerName}: {props.message.text}
@@ -26,6 +28,7 @@ const Chat = () => {
     const chatMessageFieldRef = React.useRef<HTMLInputElement>(null);
     const chatMessagesRef = React.useRef<HTMLDivElement>(null);
     const atChatBottom = React.useRef(true);
+    const showFlash = useFlash();
 
     const chatDep = JSON.stringify(roomState.chat);
 
@@ -61,8 +64,17 @@ const Chat = () => {
                 className={classNames("inline", styles.chatInput)}
                 onSubmit={e => {
                     e.preventDefault();
-                    if (chatMessageFieldRef.current?.value) {
-                        sendEvent(roomSocket, "chat", { text: chatMessageFieldRef.current.value });
+                    const text = chatMessageFieldRef.current?.value;
+                    if (text) {
+                        if (text.startsWith("/")) {
+                            executeCommand(...(text.slice(1).split(" ") as [string])).then(msg => {
+                                if (msg) {
+                                    showFlash(msg);
+                                }
+                            });
+                        } else {
+                            sendEvent(roomSocket, "chat", { text: chatMessageFieldRef.current.value });
+                        }
                         chatMessageFieldRef.current.value = "";
                     }
                 }}

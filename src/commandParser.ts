@@ -1,10 +1,10 @@
-export interface Command<T extends string[]> {
-    callback: (...args: T) => Promise<any>;
+export interface Command {
+    callback: (...args: string[]) => Promise<any>;
     help: string;
 }
 
 export type Commands = {
-    [key: string]: Command<string[]>;
+    [key: string]: Command;
 };
 
 const commands: Commands = {
@@ -19,6 +19,12 @@ const commands: Commands = {
         },
         help: "Show this help message",
     },
+    echo: {
+        callback: async (...args: string[]) => {
+            return args.join(" ");
+        }, 
+        help: "Echos the provided arguments"
+    }
 };
 
 export default commands;

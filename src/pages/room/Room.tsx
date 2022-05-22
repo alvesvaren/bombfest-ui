@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffectOnce } from "react-use";
-import { deleteToken, gameEmitter, joinRoom, sendEventWithResponse } from "../../api";
+import { deleteToken, gameEmitter, joinRoom, pingServer } from "../../api";
 import commands from "../../commandParser";
 import { useFlash } from "../../hooks";
 import { BaseGameState, ChatMessage, CloseReason, defaultRules, ErrorEvent, GameBroadcastEvent } from "../../interfaces";
@@ -95,11 +95,7 @@ const Room = () => {
 
     useEffect(() => {
         commands.ping = {
-            callback: async () => {
-                const timeBefore = Date.now();
-                await sendEventWithResponse(roomSocket, "ping", undefined, timeBefore);
-                return Date.now() - timeBefore + "ms";
-            },
+            callback: async () => (await pingServer(roomSocket)) + "ms",
             help: "Ping the server",
         };
 

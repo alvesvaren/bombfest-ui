@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useUnmount } from "react-use";
-import { getTokenData, updateUsername } from "./api";
+import { executeCommand, getTokenData, updateUsername } from "./api";
 import "./app.scss";
 import FlashMessageCard from "./components/FlashMessageCard";
 import * as Icons from "./components/Icons";
@@ -14,7 +14,7 @@ import NewRoom from "./pages/NewRoom";
 import Rooms from "./pages/Rooms";
 import Settings from "./pages/Settings";
 import { searchParams } from "./searchparams";
-import commands, { Commands } from "./commandParser";
+import commands from "./commandParser";
 import classNames from "classnames";
 import styles from "./App.module.scss";
 
@@ -92,7 +92,7 @@ const App = () => {
         commands.flash = {
             callback: async (message: string, type: string) => {
                 showFlash(message, type as any);
-                return "Showing flash message";
+                return "";
             },
             help: "Show a flash message",
         };
@@ -133,16 +133,16 @@ const App = () => {
 
 const WrappedApp = () => {
     const [message, setMessage] = React.useState<FlashMessage | undefined>();
-    let flashTimeout: number | undefined;
+    let flashTimeout = React.useRef<number>(-1);
 
     const showMessage = (newMessage: FlashMessage) => {
         setMessage(newMessage);
-        window.clearTimeout(flashTimeout);
-        flashTimeout = window.setTimeout(() => setMessage(undefined), 5000);
+        window.clearTimeout(flashTimeout.current);
+        flashTimeout.current = window.setTimeout(() => setMessage(undefined), 5000);
     };
 
     useUnmount(() => {
-        window.clearTimeout(flashTimeout);
+        window.clearTimeout(flashTimeout.current);
     });
 
     return (
@@ -150,21 +150,13 @@ const WrappedApp = () => {
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <App />
-                    <FlashMessageCard clearFlash={() => setMessage(undefined)} message={message} />
+                    <FlashMessageCard key={flashTimeout.current} clearFlash={() => setMessage(undefined)} message={message} />
                 </BrowserRouter>
             </QueryClientProvider>
         </FlashContext.Provider>
     );
 };
 
-(window as any).executeCommand = <T extends keyof Commands>(command: T, ...args: Parameters<Commands[T]["callback"]>) => {
-    if (commands[command]) {
-        commands[command].callback(...(args as any)).then(msg => {
-            console.log(msg);
-        });
-    } else {
-        console.log(`Unknown command: ${command}`);
-    }
-};
+(window as any).executeCommand = (...args: [any]) => void executeCommand(...args).then(console.log);
 
 export default WrappedApp;

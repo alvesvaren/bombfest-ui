@@ -1,6 +1,7 @@
 import { GameEvent, nonce, RoomData, TokenData } from "./interfaces";
 import EventEmitter from "events";
 import { searchParams } from "./searchparams";
+import commands, { Commands } from "./commandParser";
 
 const apiEntryPoint = "/api";
 const wsEntryPoint = `ws${window.location.protocol === "https:" ? "s" : ""}://${window.location.host}${apiEntryPoint}`;
@@ -28,6 +29,20 @@ export const saveToken = (cuid: string) => {
 export const deleteToken = () => {
     localStorage.removeItem("token");
     authEmitter.emit("auth-changed");
+};
+
+export const executeCommand = async <T extends keyof Commands>(command: T, ...args: Parameters<Commands[T]["callback"]>): Promise<string> => {
+    if (commands[command]) {
+        return await commands[command].callback(...(args as any));
+    } else {
+        return `Unknown command: ${command}`;
+    }
+};
+
+export const pingServer = async (ws: WebSocket | null) => {
+    const timeBefore = Date.now();
+    await sendEventWithResponse(ws, "ping", undefined, timeBefore);
+    return Date.now() - timeBefore;
 };
 
 export const jwtToJson = (token?: string): TokenData | null => {

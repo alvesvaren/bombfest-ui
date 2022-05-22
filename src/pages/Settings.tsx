@@ -37,7 +37,15 @@ const Settings: React.FC = props => {
             </button>
             <div>
                 <label>
-                    Volume: <input defaultValue={localStorage.volume || 1} type='range' min='0' max='1' step='0.1' onChange={e => localStorage.volume = e.currentTarget.valueAsNumber} />
+                    Volume:{" "}
+                    <input
+                        defaultValue={localStorage.volume || 1}
+                        type='range'
+                        min='0'
+                        max='1'
+                        step='0.1'
+                        onChange={e => (localStorage.volume = e.currentTarget.valueAsNumber)}
+                    />
                 </label>
             </div>
         </Narrow>
