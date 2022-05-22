@@ -19,11 +19,11 @@ const PlayerText = (props: { player: PlayerData }) => {
     const [DeathShake, startDeathShake] = useAnimated("death-shake");
 
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", e => {
-        if (e.for === player.cuid) startShake();
+        if (e.for === player.cuid) setTimeout(startShake, 5)
     });
 
     useRoomEvent<DamageBroadcastEvent>("damage", e => {
-        if (e.for === player.cuid) setTimeout(startDeathShake, 2);
+        if (e.for === player.cuid) setTimeout(startDeathShake, 5);
     });
 
     const newParts = React.useMemo(() => {
@@ -54,7 +54,7 @@ const PlayerText = (props: { player: PlayerData }) => {
                     {player.name} ({player.lives} hp):{" "}
                 </span>
                 <Shake>
-                    <span className='text'>{isCurrentPlayer ? newParts : state.prompt}</span>
+                    <span className='text'>{isCurrentPlayer ? newParts : player.text}</span>
                 </Shake>
             </DeathShake>
         </div>
@@ -80,9 +80,8 @@ const Game = () => {
     const [playDeath] = useSound(sounds.death, { volume });
     const showFlash = useFlash();
 
-    const handleEnd = (data: EndBroadcastEvent["data"]) => {
+    const handleEnd = (data: EndBroadcastEvent["data"]) =>
         showFlash(`Game over! ${state.players.find(player => data.winner === player.cuid)?.name} won!`, "success");
-    };
 
     useRoomEvent<CorrectBroadcastEvent>("correct", () => playCorrect());
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", () => playIncorrect());
