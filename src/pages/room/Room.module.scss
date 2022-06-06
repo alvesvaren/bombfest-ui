@@ -24,11 +24,10 @@ $chat-width: min(20rem, 30vw);
 }
 
 .gameInput {
-    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    bottom: 1rem;
+    margin-bottom: 1rem;
 }
 
 .board {
@@ -40,6 +39,7 @@ $chat-width: min(20rem, 30vw);
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
+    position: relative;
 }
 
 .chat {
@@ -66,4 +66,17 @@ $chat-width: min(20rem, 30vw);
         overflow-y: auto;
         word-break: break-all;
     }
+}
+
+.playerText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.absoluteCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

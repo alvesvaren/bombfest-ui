@@ -1,0 +1,28 @@
+@import "../vars";
+
+$radial-size: 65;
+
+.radial {
+    position: relative;
+    height: min($radial-size + 0vw, $radial-size + 0vh);
+    aspect-ratio: 1/1;
+}
+
+.radialContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(100vh - $nav-height);
+    overflow: hidden;
+}
+
+.radialChild {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // outline: 1px solid red;
+}

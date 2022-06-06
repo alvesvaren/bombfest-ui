@@ -29,6 +29,15 @@ body {
 
 body {
     background-color: var(--background);
+    min-height: 100vh;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+main {
+    min-height: 100%;
 }
 
 :root {

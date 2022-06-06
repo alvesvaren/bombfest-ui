@@ -67,7 +67,7 @@ const Index = () => {
     };
 
     return (
-        <Narrow className="center column">
+        <Narrow className='center column'>
             <h1 className={classNames("center", styles.title)}>{Icons.tickingBomb} Bombfest</h1>
             <form onSubmit={handleSubmit}>
                 <input

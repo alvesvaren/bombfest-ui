@@ -10,6 +10,7 @@ import * as Icons from "../../components/Icons";
 import useSound from "use-sound";
 import useAnimated from "../../components/Animated";
 import { useFlash } from "../../hooks";
+import Radial from "../../components/Radial";
 
 const PlayerText = (props: { player: PlayerData }) => {
     const { player } = props;
@@ -19,7 +20,7 @@ const PlayerText = (props: { player: PlayerData }) => {
     const [DeathShake, startDeathShake] = useAnimated("death-shake");
 
     useRoomEvent<IncorrectBroadcastEvent>("incorrect", e => {
-        if (e.for === player.cuid) setTimeout(startShake, 5)
+        if (e.for === player.cuid) setTimeout(startShake, 5);
     });
 
     useRoomEvent<DamageBroadcastEvent>("damage", e => {
@@ -48,16 +49,16 @@ const PlayerText = (props: { player: PlayerData }) => {
     const isCurrentPlayer = player.cuid === playingPlayer?.cuid;
 
     return (
-        <div className={classNames({ current: isCurrentPlayer, dead: !player.alive, disconnected: !player.connected })}>
-            <DeathShake>
+        <DeathShake>
+            <div className={classNames(styles.playerText, { current: isCurrentPlayer, dead: !player.alive, disconnected: !player.connected })}>
                 <span className='name'>
                     {player.name} ({player.lives} hp):{" "}
                 </span>
                 <Shake>
                     <span className='text'>{isCurrentPlayer ? newParts : player.text}</span>
                 </Shake>
-            </DeathShake>
-        </div>
+            </div>
+        </DeathShake>
     );
 };
 
@@ -117,16 +118,20 @@ const Game = () => {
     return (
         <div className={styles.game}>
             <div className={styles.board}>
-                {timeLeft > 0 && <div className={styles.gameStatus}>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
-                {waitingForPlayers && <div className={styles.gameStatus}>Waiting for players...</div>}
-                {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && !state.isPlaying && (
-                    <button onClick={() => sendEvent(socket, "play", {})}>Join</button>
-                )}
-                <h1>{state.isPlaying && Icons.tickingBomb}</h1>
-                {state.prompt && <h2>{state.prompt}</h2>}
-                {playingPlayers.map(player => {
-                    return <PlayerText key={player.cuid} player={player} />;
-                })}
+                <Radial>
+                    {playingPlayers.map(player => {
+                        return <PlayerText key={player.cuid} player={player} />;
+                    })}
+                </Radial>
+                <div className={styles.absoluteCenter}>
+                    {timeLeft > 0 && <div className={styles.gameStatus}>{Math.ceil(timeLeft / 1000)} seconds left until game starts</div>}
+                    {waitingForPlayers && <div className={styles.gameStatus}>Waiting for players...</div>}
+                    {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && !state.isPlaying && (
+                        <button onClick={() => sendEvent(socket, "play", {})}>Join</button>
+                    )}
+                    <h1>{state.isPlaying && Icons.tickingBomb}</h1>
+                    {state.prompt && <h2>{state.prompt}</h2>}
+                </div>
             </div>
 
             <form
