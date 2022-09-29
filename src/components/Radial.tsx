@@ -29,7 +29,7 @@ const Radial: React.FC<RadialProps> = props => {
         const top = Math.sin(angle) * (rootRef.current.clientHeight / 2);
         const left = Math.cos(angle) * (rootRef.current.clientWidth / 2);
         processedChildren.push(
-            <div className={styles.radialChild} style={{ top, left }}>
+            <div key={index} className={styles.radialChild} style={{ top, left }}>
                 {child}
             </div>
         );
