@@ -130,8 +130,11 @@ const Game = () => {
                     {!playingPlayers.map(player => player.cuid).includes(localUuid || "") && !state.isPlaying && (
                         <button onClick={() => sendEvent(socket, "play", {})}>Join</button>
                     )}
-                    <h1>{state.isPlaying && Icons.tickingBomb}</h1>
-                    {state.prompt && <h2>{state.prompt}</h2>}
+                    {state.prompt && <span className={styles.prompt}>{state.prompt}</span>}
+                    <div className={styles.bomb}>
+                        {state.isPlaying && Icons.tickingBomb}
+                        {/* <span className={styles.timer}>{state.timeLeft}</span> */}
+                    </div>
                 </div>
             </div>
 
