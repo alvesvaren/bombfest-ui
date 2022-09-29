@@ -32,7 +32,7 @@ jobs:
                   key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
             - name: Install dependencies
-              run: yarn install
+              run: yarn
 
             - name: Build site
               run: yarn build
@@ -44,5 +44,5 @@ jobs:
                 port: 2022
                 username: 'github.773a361c'
                 password: ${{ secrets.ftp_password }}
-                localPath: './build/'
+                localPath: './dist/'
                 remotePath: './webroot/'
