@@ -51,11 +51,12 @@ const PlayerText = (props: { player: PlayerData }) => {
     return (
         <DeathShake>
             <div className={classNames(styles.playerText, { current: isCurrentPlayer, dead: !player.alive, disconnected: !player.connected })}>
-                <span className='name'>
-                    {player.name} ({player.lives} hp):{" "}
+                <span className={styles.hearts}>{(new Array(player.lives)).fill(0).map((_,i) => Icons.heart)}</span>
+                <span className={styles.name}>
+                    {player.name}
                 </span>
                 <Shake>
-                    <span className='text'>{isCurrentPlayer ? newParts : player.text}</span>
+                    <span className={styles.text}>{isCurrentPlayer ? newParts : player.text}</span>
                 </Shake>
             </div>
         </DeathShake>

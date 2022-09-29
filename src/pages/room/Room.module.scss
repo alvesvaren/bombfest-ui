@@ -72,6 +72,13 @@ $chat-width: min(20rem, 30vw);
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-weight: 800;
+    color: white;
+    text-shadow: $default-shadow;
+
+    .text {
+        color: var(--gray);
+    }
 }
 
 .absoluteCenter {
@@ -79,4 +86,10 @@ $chat-width: min(20rem, 30vw);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.hearts {
+    display: flex;
+    gap: 0.5rem;
+    color: var(--red);
 }
