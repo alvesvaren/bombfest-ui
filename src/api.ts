@@ -1,10 +1,11 @@
 import { GameEvent, nonce, RoomData, TokenData } from "./interfaces";
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import { searchParams } from "./searchparams";
 import commands, { Commands } from "./commandParser";
 
-const apiEntryPoint = "/api";
-const wsEntryPoint = `ws${window.location.protocol === "https:" ? "s" : ""}://${window.location.host}${apiEntryPoint}`;
+const apiSuffix = `${import.meta.env.VITE_API_HOST}/api`;
+const apiEntryPoint = `https://${apiSuffix}`;
+const wsEntryPoint = `wss://${apiSuffix}`;
 
 export const gameEmitter = new EventEmitter();
 export const authEmitter = new EventEmitter();
@@ -122,6 +123,7 @@ export const createRoom = async (name: string): Promise<RoomData> => {
 };
 
 export const updateUsername = async (username: string) => {
+    console.log(apiEntryPoint)
     const result = await fetch(`${apiEntryPoint}/account`, {
         method: "POST",
         body: JSON.stringify({
