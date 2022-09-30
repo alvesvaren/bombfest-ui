@@ -6,8 +6,8 @@ import commands, { Commands } from "./commandParser";
 const { VITE_API_HOST: API_HOST, VITE_API_SECURE: API_SECURE } = import.meta.env;
 
 const apiSuffix = `${API_HOST}/api`;
-const apiEntryPoint = `http${API_SECURE ? 's' : ''}://${apiSuffix}`;
-const wsEntryPoint = `ws${API_SECURE ? 's' : ''}://${apiSuffix}`;
+const apiEntryPoint = `http${API_SECURE === "true" ? 's' : ''}://${apiSuffix}`;
+const wsEntryPoint = `ws${API_SECURE === "true" ? 's' : ''}://${apiSuffix}`;
 
 export const gameEmitter = new EventEmitter();
 export const authEmitter = new EventEmitter();
