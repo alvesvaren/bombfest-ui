@@ -145,7 +145,7 @@ a {
     opacity: 0.5;
 }
 
-input {
+input, select, textarea {
     background-color: var(--light-background);
     border-radius: 0.3em;
     padding: 0.5rem 0.7rem;

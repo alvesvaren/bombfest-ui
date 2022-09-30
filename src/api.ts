@@ -1,4 +1,4 @@
-import { GameEvent, nonce, RoomData, TokenData } from "./interfaces";
+import { GameEvent, nonce, RoomCreationData, RoomData, TokenData } from "./interfaces";
 import { EventEmitter } from "events";
 import { searchParams } from "./searchparams";
 import commands, { Commands } from "./commandParser";
@@ -104,14 +104,14 @@ export const sendEventWithResponse = <T extends GameEvent>(ws: WebSocket | null,
     });
 };
 
-export const createRoom = async (name: string): Promise<RoomData> => {
+export const createRoom = async (data: RoomCreationData): Promise<RoomData> => {
     const response = await fetch(`${apiEntryPoint}/rooms`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + getToken(),
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify(data),
     });
     if (response.status === 400) {
         throw new Error((await response.json()).error);
