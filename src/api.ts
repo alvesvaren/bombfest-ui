@@ -3,9 +3,11 @@ import { EventEmitter } from "events";
 import { searchParams } from "./searchparams";
 import commands, { Commands } from "./commandParser";
 
-const apiSuffix = `${import.meta.env.VITE_API_HOST}/api`;
-const apiEntryPoint = `https://${apiSuffix}`;
-const wsEntryPoint = `wss://${apiSuffix}`;
+const { VITE_API_HOST: API_HOST, VITE_API_SECURE: API_SECURE } = import.meta.env;
+
+const apiSuffix = `${API_HOST}/api`;
+const apiEntryPoint = `http${API_SECURE ? 's' : ''}://${apiSuffix}`;
+const wsEntryPoint = `ws${API_SECURE ? 's' : ''}://${apiSuffix}`;
 
 export const gameEmitter = new EventEmitter();
 export const authEmitter = new EventEmitter();
@@ -114,7 +116,7 @@ export const createRoom = async (data: RoomCreationData): Promise<RoomData> => {
         body: JSON.stringify(data),
     });
     if (response.status === 400) {
-        throw new Error((await response.json()).error);
+        throw Object.values((await response.json()).errors)[0];
     }
     if (!response.ok) {
         throw new Error(response.statusText);

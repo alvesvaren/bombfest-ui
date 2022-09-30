@@ -28,9 +28,9 @@ const NewRoom: React.FC = props => {
                     let data: RoomData | null = null;
                         try {
                             data = await createRoom(roomData);
-                        } catch (e: any) {
+                        } catch (err: any) {
                             showFlash(
-                                `Could not create room: ${e.message}`,
+                                `Could not create room: ${err}`,
                                 "error"
                             );
                             return;
