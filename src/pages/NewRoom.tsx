@@ -73,6 +73,8 @@ const NewRoom: React.FC = props => {
                     <input
                         type="number"
                         placeholder="Min WPP"
+                        defaultValue={500}
+                        title="Minimum words per prompt, can be left empty"
                         onChange={e =>
                             setRoomData({
                                 ...roomData,
@@ -86,6 +88,7 @@ const NewRoom: React.FC = props => {
                     <input
                         type="number"
                         placeholder="Max WPP"
+                        title="Maximum words per prompt, can be left empty"
                         onChange={e =>
                             setRoomData({
                                 ...roomData,
